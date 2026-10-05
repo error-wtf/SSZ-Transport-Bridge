@@ -17,8 +17,10 @@ from .contracts import (
     check_inverse_round_trip,
     check_parity,
 )
+from .rules import ObservableRule
 
 __all__ = [
+    "ObservableRule",
     "ObservableSet",
     "PropagatedState",
     "SignalLaw",

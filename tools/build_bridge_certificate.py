@@ -16,6 +16,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
+import subprocess
 import sys
 from pathlib import Path
 
@@ -23,15 +25,30 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 
+CONTRACTS = ("forward", "convergence", "direction_parity", "observable", "inverse")
+
+
+def contracts_pass(flags: dict) -> bool:
+    return set(flags) == set(CONTRACTS) and all(flags[k] is True for k in CONTRACTS)
+
+
+def finite_observables(values: dict, names: tuple) -> bool:
+    try:
+        return bool(names) and all(math.isfinite(float(values[k])) for k in names)
+    except (KeyError, ValueError, TypeError, OverflowError):
+        return False
+
+
 def git_head(repo: Path) -> str:
-    head = repo / ".git/HEAD"
-    if not head.exists():
-        return "UNKNOWN"
-    txt = head.read_text().strip()
-    if txt.startswith("ref: "):
-        ref = repo / ".git" / txt[5:]
-        return ref.read_text().strip()[:12] if ref.exists() else "UNKNOWN"
-    return txt[:12]
+    top = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "--show-toplevel"], text=True).strip()
+    if Path(top).resolve() != repo.resolve():
+        raise ValueError("not a repository root")
+    sha = subprocess.check_output(
+        ["git", "-C", str(repo), "rev-parse", "--verify", "HEAD^{commit}"], text=True).strip()
+    if len(sha) != 40 or any(c not in "0123456789abcdef" for c in sha):
+        raise ValueError("invalid full commit SHA")
+    return sha
 
 
 def sha256_file(p: Path) -> str:
@@ -80,8 +97,10 @@ def main() -> int:
     try:
         from transport_bridge import SignalLaw
         from transport_bridge.backends import ssz_closure_backend as cb
+        # b must sit INSIDE the photon cone of the frozen member at r0:
+        # b_crit(1.55) ~= 2.489 -> b=2.0.
         law = SignalLaw("ssz_closure",
-                        {"inward": 0.0, "b": 2.5, "r0": 1.55},
+                        {"inward": 0.0, "b": 2.0, "r0": 1.55},
                         hashlib.sha256(b"ssz-closure").hexdigest())
         op = cb.make_operator(law)
         out = op.run()

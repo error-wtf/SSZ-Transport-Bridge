@@ -17,6 +17,8 @@ from typing import Any
 
 import numpy as np
 
+from .rules import ObservableRule, evaluate_rules
+
 
 @dataclass(frozen=True)
 class SignalLaw:
@@ -84,9 +86,18 @@ class ObservableSet:
     scalar: names that must be invariant (sagnac: total, gamma).
     inverse: name of the inverse-reconstruction target (sagnac: v).
     """
-    directional: tuple[str, ...]
-    scalar: tuple[str, ...]
-    inverse: str
+    # Legacy fields explicitly mean odd/even (not inferred from direction tags).
+    directional: tuple[str, ...] = ()
+    scalar: tuple[str, ...] = ()
+    inverse: str = ""
+    rules: tuple[ObservableRule, ...] = ()
+
+    def policies(self, atol: float) -> tuple[ObservableRule, ...]:
+        if self.rules and (self.directional or self.scalar):
+            raise ValueError("use rules or legacy odd/even declarations, not both")
+        return self.rules or tuple(
+            [ObservableRule(n, "odd", atol) for n in self.directional]
+            + [ObservableRule(n, "even", atol) for n in self.scalar])
 
 
 def check_forward(
@@ -98,16 +109,10 @@ def check_forward(
     """forward_values: observable name -> (plus-direction, minus-direction).
     Structural contract: directional names must swap, scalars must be
     invariant."""
-    results: dict[str, bool] = {}
-    for name in obs.directional:
-        plus, minus = forward_values[name]
-        results[f"directional_swap:{name}"] = bool(
-            np.isclose(plus, -minus, rtol=0.0, atol=atol))
-    for name in obs.scalar:
-        plus, minus = forward_values[name]
-        results[f"scalar_invariant:{name}"] = bool(
-            np.isclose(plus, minus, rtol=0.0, atol=atol))
-    return results
+    policies = obs.policies(atol)
+    plus = {k: v[0] for k, v in forward_values.items()}
+    minus = {k: v[1] for k, v in forward_values.items()}
+    return {k: v == "PASS" for k, v in evaluate_rules(policies, plus, minus).items()}
 
 
 def check_convergence(
@@ -150,14 +155,8 @@ def check_parity(
     atol: float,
 ) -> dict[str, bool]:
     """Direction swap contract on propagated states."""
-    out: dict[str, bool] = {}
-    for name in obs.directional:
-        out[f"parity_swap:{name}"] = bool(np.isclose(
-            plus.values[name], -minus.values[name], rtol=0.0, atol=atol))
-    for name in obs.scalar:
-        out[f"parity_invariant:{name}"] = bool(np.isclose(
-            plus.values[name], minus.values[name], rtol=0.0, atol=atol))
-    return out
+    return {k: v == "PASS" for k, v in
+            evaluate_rules(obs.policies(atol), plus.values, minus.values).items()}
 
 
 def check_inverse_round_trip(

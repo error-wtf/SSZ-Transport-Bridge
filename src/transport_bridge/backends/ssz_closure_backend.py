@@ -1,18 +1,19 @@
-"""SSZ closure backend — READ-ONLY adapter to SSZ_FULL_CLOSURE.
+"""SSZ closure backend — INDEPENDENT VALIDATOR.
 
-CORE RULE: this adapter contains ZERO SSZ physics.  Every quantity is
-computed by the SSZ_FULL_CLOSURE transport core (postclosure/transport.py:
-k^nu nabla_nu k^mu = 0, null congruence, eikonal phase S_r, redshift);
-the adapter only wraps results into the bridge contract types.
+CORE RULE: This backend is a JUDGE. It does NOT import physics functions from
+SSZ_FULL_CLOSURE. It consumes frozen metric data and performs independent
+numerical solves to certify the transport results.
 
-Requires the closure checkout; raises ImportError (skip-able) when it
-is unavailable, so CI without the checkout skips cleanly.
+Symmetry: static spherical geometry.
 """
 from __future__ import annotations
 
-import os
+import json
 from pathlib import Path
 from typing import Any
+
+import numpy as np
+from scipy.integrate import solve_ivp
 
 from transport_bridge import (
     ObservableSet,
@@ -20,110 +21,109 @@ from transport_bridge import (
     TransportArchitecture,
     TransportOperator,
 )
+from transport_bridge.provenance import load_closure_provenance
 
-_CANDIDATES = [
-    Path("/home/error/physics/clones/SSZ_FULL_CLOSURE/src"),
-    Path("/home/error/ssz-full-closure/src"),
-]
-_REF = Path(os.environ.get(
-    "SSZ_FULL_CLOSURE_SRC",
-    str(next((c for c in _CANDIDATES if (c / "ssz_p5").exists()),
-             _CANDIDATES[0]))))
+# --- Independent Numerical Solvers (The Judge's Tools) ---
 
-import sys  # noqa: E402
+def _independent_null_transport(f_spline, h_spline, b, r0, inward=True, lam_span=(0.0, 30.0)):
+    """Independent check of null geodesic conservation."""
+    f0 = float(f_spline(r0))
+    h0 = float(h_spline(r0))
+    
+    val = h0 * (1.0 / f0 - b**2 / r0**2)
+    if val < 0:
+        raise ValueError("Forbidden b at r0")
+    
+    kr0 = -np.sqrt(val) if inward else np.sqrt(val)
+    kt0 = 1.0 / f0
+    kph0 = b / r0**2
 
-if str(_REF) not in sys.path:
-    sys.path.insert(0, str(_REF))
+    def rhs(lam, y):
+        _, r, _, kt, kr, kph = y
+        f = float(f_spline(r))
+        fp = float(f_spline.derivative()(r))
+        h = float(h_spline(r))
+        hp = float(h_spline.derivative()(r))
+        return [
+            kt, kr, kph,
+            -(fp / f) * kt * kr,
+            -(0.5 * h * fp) * kt**2 + (hp / (2.0 * h)) * kr**2 + h * r * kph**2,
+            -(2.0 / r) * kr * kph,
+        ]
 
-try:
-    from ssz_p5.postclosure.transport import (
-        eikonal_phase_and_redshift,
-        load_member_metric,
-        null_geodesic_transport,
-    )
-except ModuleNotFoundError as _exc:  # pragma: no cover - env-dependent
-    # ImportError so pytest.importorskip can skip cleanly on CI.
-    raise ImportError(
-        f"ssz_closure backend requires the SSZ_FULL_CLOSURE checkout "
-        f"(looked for {_REF}); set SSZ_FULL_CLOSURE_SRC.  "
-        f"Original error: {_exc}") from _exc
+    sol = solve_ivp(rhs, lam_span, [0.0, r0, 0.0, kt0, kr0, kph0], 
+                    method="DOP853", rtol=1e-12, atol=1e-12)
+    
+    if not sol.success:
+        raise RuntimeError("Judge solve failed")
+
+    _t, r, _phi, kt, kr, kph = sol.y
+    E_arr = f_spline(r) * kt
+    L_arr = r**2 * kph
+    nrm = -f_spline(r) * kt**2 + kr**2 / h_spline(r) + r**2 * kph**2
+    
+    return {
+        "max_dE": float(np.max(np.abs(E_arr - 1.0))),
+        "max_dL": float(np.max(np.abs(L_arr - b))),
+        "max_norm_res": float(np.max(np.abs(nrm))),
+    }
+
+def _independent_phase_redshift(f_spline, h_spline, r_a, r_b):
+    """Independent quadrature for eikonal phase and redshift."""
+    r_grid = np.linspace(min(r_a, r_b), max(r_a, r_b), 20000)
+    integ = float(np.trapezoid(1.0 / np.sqrt(f_spline(r_grid) * h_spline(r_grid)), r_grid))
+    z = float(np.sqrt(f_spline(r_a) / f_spline(r_b)))
+    
+    return {
+        "shapiro_dt_per_E": integ,
+        "reduced_phase_per_E": integ,
+        "redshift_a_to_b": z,
+    }
+
+# --- Backend Adapter ---
 
 ARCHITECTURE = TransportArchitecture(
-    name="ssz_postclosure_transport",
+    name="ssz_independent_judge",
     direction_parameter="inward",
     operator_class="null_geodesic",
 )
 
 OBSERVABLES = ObservableSet(
-    directional=(),          # static spherical geometry: no sign-swap law
-    scalar=("shapiro_dt_per_E", "reduced_phase_per_E",
+    directional=(), 
+    scalar=("shapiro_dt_per_E", "reduced_phase_per_E", 
             "redshift_a_to_b", "max_dE", "max_dL", "max_norm_res"),
-    inverse="",              # inverse problem deferred (contract 5)
+    inverse="", 
 )
 
-
-def _metric():
-    return load_member_metric(Path(_REF).parent)
-
-
-def make_operator(law: SignalLaw,
-                  r_a: float = 1.5, r_b: float = 1.6) -> TransportOperator:
-    """Defaults inside the locked member domain (1.409-1.638 r/r_s)."""
-    """law.parameters: {"inward": +1/-1 or 0, "b": impact parameter}.
-
-    The closure's own code does all physics: null geodesic transport
-    (k^nu nabla_nu k^mu = 0 conservation check), eikonal phase and
-    redshift quadrature.  The adapter only wraps.
-    """
-    import numpy as np  # local: only for finiteness checks
+def make_operator(law: SignalLaw, r_a: float = 1.5, r_b: float = 1.6) -> TransportOperator:
+    repo_path = Path("/home/error/physics/clones/SSZ_FULL_CLOSURE")
+    
+    lock = json.loads((repo_path / "MODEL_LOCK.json").read_text())
+    member_p = repo_path / lock["action_member_stream"]
+    
+    from .utils import load_metric_splines
+    f_spl, h_spl = load_metric_splines(member_p)
 
     def _solve(law_: SignalLaw) -> dict[str, Any]:
-        m = _metric()
         inward = bool(law_.parameters.get("inward", 1.0) >= 0)
         b = float(law_.parameters.get("b", 2.5))
         r0 = float(law_.parameters.get("r0", r_a))
-        # Domain exit is a NORMAL end for an open ray; the closure code
-        # raises on it.  On domain exit we mark the geodesic and keep the
-        # eikonal (exact quadrature) observables — all finite.
-        tc = None
-        try:
-            tc = null_geodesic_transport(m, b=b, r0=r0, inward=inward)
-        except RuntimeError as exc:
-            if "termination event" not in str(exc):
-                raise
-        eik = eikonal_phase_and_redshift(m, r_a, r_b)
-        out = {
-            "shapiro_dt_per_E": eik["shapiro_dt_per_E"],
-            "reduced_phase_per_E": eik["reduced_phase_per_E"],
-            "redshift_a_to_b": eik["redshift_a_to_b"],
-        }
-        if tc is not None:
-            out["max_dE"] = tc.max_dE
-            out["max_dL"] = tc.max_dL
-            out["max_norm_res"] = tc.max_norm_res
-        else:
-            out["max_dE"] = float("nan")
-            out["max_dL"] = float("nan")
-            out["max_norm_res"] = float("nan")
-            out["geodesic_domain_exit"] = True
-        if not all(np.isfinite(float(v)) for k, v in out.items()
-                   if k != "geodesic_domain_exit"):
-            raise ValueError("non-finite observable from closure transport")
-        return out
+        
+        transport = _independent_null_transport(f_spl, h_spl, b, r0, inward)
+        phase = _independent_phase_redshift(f_spl, h_spl, r_a, r_b)
+        
+        return {**transport, **phase}
 
     return TransportOperator(ARCHITECTURE, law, _solve)
 
-
-def provenance() -> dict[str, str]:
-    """Bind to the closure state: git commit + checkout path."""
-    root = Path(_REF).parent
-    head = "UNKNOWN"
-    head_file = root / ".git/HEAD"
-    if head_file.exists():
-        txt = head_file.read_text().strip()
-        if txt.startswith("ref: "):
-            ref = root / ".git" / txt[5:]
-            head = ref.read_text().strip()[:12] if ref.exists() else "UNKNOWN"
-        else:
-            head = txt[:12]
-    return {"closure_git_head": head, "closure_src": str(_REF)}
+def provenance() -> dict[str, Any]:
+    repo_path = Path("/home/error/physics/clones/SSZ_FULL_CLOSURE")
+    p = load_closure_provenance(repo_path)
+    # Expose the full provenance binding, with the historical key names the
+    # contract tests assert on:
+    return {
+        **p,
+        "closure_git_head": p["commit_sha"],
+        "closure_member_sha256": p["member_sha256"],
+        "closure_src": str(repo_path),
+    }

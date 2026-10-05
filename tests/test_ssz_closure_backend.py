@@ -31,8 +31,11 @@ def _provenance(params: dict) -> str:
     return hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()
 
 
-LAW = SignalLaw("ssz_closure", {"inward": 0.0, "b": 2.5, "r0": 1.55},
-                _provenance({"inward": 0.0, "b": 2.5, "r0": 1.55}))
+# b must sit INSIDE the photon cone of the frozen member at r0:
+# b_crit(r0=1.55) = r0/sqrt(f) ~= 2.489 on ELECTRIC_PRODUCTION_MEMBER_CURRENT.
+# b=2.5 is outside -> correct ValueError guard.  Tests use b=2.0.
+LAW = SignalLaw("ssz_closure", {"inward": 0.0, "b": 2.0, "r0": 1.55},
+                _provenance({"inward": 0.0, "b": 2.0, "r0": 1.55}))
 
 
 def test_forward_run_all_observables_finite():
