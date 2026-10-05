@@ -32,13 +32,21 @@ _REF = Path(__import__("os").environ.get(
 if str(_REF) not in sys.path:
     sys.path.insert(0, str(_REF))
 
-from sagnac_reference.analytic import (  # noqa: E402  (reference repo)
-    SagnacConfig,
-    delta_tau_detector,
-    directed_times,
-)
-from sagnac_reference.inversion import velocity_from_times  # noqa: E402
-from sagnac_reference.true_chain import return_time_true_chain  # noqa: E402
+try:
+    from sagnac_reference.analytic import (
+        SagnacConfig,
+        delta_tau_detector,
+        directed_times,
+    )
+    from sagnac_reference.inversion import velocity_from_times
+    from sagnac_reference.true_chain import return_time_true_chain
+except ModuleNotFoundError as _exc:  # pragma: no cover - env-dependent
+    # ImportError (not RuntimeError) so pytest.importorskip can skip the
+    # backend cleanly on machines without the reference checkout (CI).
+    raise ImportError(
+        f"sagnac backend requires the validated reference checkout "
+        f"(looked for {_REF}); set SAGNAC_REFERENCE_SRC.  Original "
+        f"error: {_exc}") from _exc
 
 ARCHITECTURE = TransportArchitecture(
     name="sagnac_ring",
