@@ -1,0 +1,5 @@
+# Needed only for the ssz_closure_backend (read-only adapter):
+pandas
+scipy
+sympy
+matplotlib

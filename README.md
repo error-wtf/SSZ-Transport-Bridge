@@ -21,7 +21,12 @@ class** as every other backend that does — nothing more, nothing less.
 | Backend | Status | Source of truth |
 |---|---|---|
 | `sagnac_backend` | validated (reference layer 0) | [Sagnac-Reference-Transport](https://github.com/error-wtf/Sagnac-Reference-Transport) — read-only adapter, no formulas here |
-| `ssz_backend` | synthetic inversion only | toy frame-dragging proxy; real `(f,h)` geometry plugs in after the healthy-operator decision |
+| `ssz_synthetic_backend` | development control (toy frame-dragging proxy) | intentionally kept as negative/development control |
+| `ssz_closure_backend` | **REAL SSZ transport** — read-only adapter | [SSZ_FULL_CLOSURE](https://github.com/error-wtf/SSZ_FULL_CLOSURE) `postclosure/transport.py`: k^nu nabla_nu k^mu = 0, null congruence, eikonal phase S_r, redshift — zero physics in the bridge |
+
+Direction-contract rule: static spherical SSZ declares **no** sign-swap
+involution (the Sagnac `v -> -v` symmetry is NOT universal physics).
+The inverse problem for SSZ is explicitly deferred (`inverse=""`).
 
 ## Shared vocabulary (contracts.py)
 
