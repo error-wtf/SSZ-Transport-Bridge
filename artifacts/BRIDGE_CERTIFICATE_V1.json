@@ -8,11 +8,11 @@
  "certificate": "BRIDGE_CERTIFICATE_V1",
  "contracts": {
   "sagnac": {
-   "abs_delta_tau": true,
-   "delta_phi": true,
-   "delta_tau_signed": true,
-   "dt": true,
-   "total": true
+   "directional_swap:delta_phi": true,
+   "directional_swap:delta_tau_signed": true,
+   "directional_swap:dt": true,
+   "scalar_invariant:abs_delta_tau": true,
+   "scalar_invariant:total": true
   },
   "ssz_closure": {
    "conservation_ok": true,
@@ -24,10 +24,10 @@
   }
  },
  "external_state": {
-  "bridge_repo_sha": "41ef8640db7ca73e99ee3b228cb7ec63e82855ba",
+  "bridge_repo_sha": "35e9ca733468",
   "closure_member_sha": "5cb6d2701f28ee0c7bf18361784ebb2f4ff105360b95cd81fde48dde4015b74b",
-  "closure_repo_sha": "bcdd820248ad64fd26c4e85a9e33ec395597c832",
-  "sagnac_repo_sha": "be74157021b9a2bce78e5c301de769767b8473f0",
+  "closure_repo_sha": "c9e8c65e2bec",
+  "sagnac_repo_sha": "be74157021b9",
   "sagnac_verdict_sha": "055124379785c9bae338b5787096ba556389bf8103782c9d9b8050820d890251"
  },
  "no_shared_formulas": true,
