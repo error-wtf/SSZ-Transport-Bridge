@@ -16,8 +16,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from transport_bridge import SignalLaw
 
-sag_cb = pytest.importorskip(
-    "transport_bridge.backends.ssz_closure_backend",
+try:
+    from transport_bridge.backends import ssz_closure_backend as sag_cb
+    SSZ_CLOSURE_AVAILABLE = True
+except ImportError:
+    SSZ_CLOSURE_AVAILABLE = False
+
+pytestmark = pytest.mark.skipif(
+    not SSZ_CLOSURE_AVAILABLE,
     reason="requires the SSZ_FULL_CLOSURE checkout")
 
 
