@@ -122,7 +122,9 @@ def check_convergence(
     Returns order estimate + monotonicity flags."""
     vals = [solve_at(g) for g in grids]
     diffs = [abs(vals[i + 1] - vals[i]) for i in range(len(vals) - 1)]
-    monotone = all(diffs[i + 1] <= diffs[i] * 1.5 + 1e-300
+    # strict: a genuine convergence sequence must decrease every step
+    # (tiny float tolerance only); a 1.5x slack would swallow real bumps
+    monotone = all(diffs[i + 1] <= diffs[i] * (1.0 + 1e-9) + 1e-300
                    for i in range(len(diffs) - 1))
     observed_order = float("nan")
     if len(diffs) >= 2 and diffs[0] > 0 and diffs[-1] > 0:
