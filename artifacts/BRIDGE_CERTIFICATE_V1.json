@@ -1,0 +1,36 @@
+{
+ "all_external_backends_executed": true,
+ "backends_executed": {
+  "sagnac": true,
+  "ssz_closure": true,
+  "ssz_proxy": true
+ },
+ "certificate": "BRIDGE_CERTIFICATE_V1",
+ "contracts": {
+  "sagnac": {
+   "directional_swap:delta_phi": true,
+   "directional_swap:delta_tau_signed": true,
+   "directional_swap:dt": true,
+   "scalar_invariant:abs_delta_tau": true,
+   "scalar_invariant:total": true
+  },
+  "ssz_closure": {
+   "conservation_ok": true,
+   "observables_finite": true
+  },
+  "ssz_proxy": {
+   "directional_swap_delta_phi": true,
+   "scalar_invariant_z_mean": true
+  }
+ },
+ "external_state": {
+  "bridge_repo_sha": "97305f21c12a",
+  "closure_member_sha": "5cb6d2701f28ee0c7bf18361784ebb2f4ff105360b95cd81fde48dde4015b74b",
+  "closure_repo_sha": "36ffb18bfe31",
+  "sagnac_repo_sha": "be74157021b9",
+  "sagnac_verdict_sha": "055124379785c9bae338b5787096ba556389bf8103782c9d9b8050820d890251"
+ },
+ "no_shared_formulas": true,
+ "no_skips": true,
+ "verdict": "BRIDGE_CERTIFICATE_PASS"
+}

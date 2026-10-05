@@ -17,7 +17,7 @@ from transport_bridge import (
     check_forward,
     check_inverse_round_trip,
 )
-from transport_bridge.backends import ssz_backend as ssz
+from transport_bridge.backends import ssz_proxy_backend as ssz
 
 
 def _provenance(params: dict) -> str:
@@ -88,13 +88,22 @@ def test_both_backends_share_the_validation_class():
         flip_key = ("v" if obs_law.system == "sagnac" else "frame_sign")
         flip_delta = (-2.0 * obs_law.parameters[flip_key])
         minus = solve(obs_law.perturbed(flip_key, flip_delta))
-        dir_names = [k for k in plus if k in (obs_set.directional)]
-        for name in dir_names:
-            assert np_close(plus[name], minus[name], atol), (
-                f"{obs_law.system}.{name} failed the direction-swap contract")
+        for name in plus:
+            if name in obs_set.directional:
+                assert directional_close(plus[name], minus[name], atol), (
+                    f"{obs_law.system}.{name} failed the direction-swap "
+                    "contract (directional must flip sign)")
+            elif name in obs_set.scalar:
+                assert scalar_close(plus[name], minus[name], atol), (
+                    f"{obs_law.system}.{name} failed the scalar-invariance "
+                    "contract (scalar must not flip sign)")
 
 
-def np_close(a: float, b: float, atol: float) -> bool:
-    """The direction-swap contract: either a == -b (swaps) or a == b
-    (invariant) — the bridge accepts both but records which."""
-    return abs(a + b) <= atol or abs(a - b) <= atol
+def directional_close(a: float, b: float, atol: float) -> bool:
+    """Directional observables MUST flip sign under direction reversal."""
+    return abs(a + b) <= atol
+
+
+def scalar_close(a: float, b: float, atol: float) -> bool:
+    """Scalar observables MUST be invariant under direction reversal."""
+    return abs(a - b) <= atol
