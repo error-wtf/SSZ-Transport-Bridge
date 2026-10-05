@@ -1,0 +1,66 @@
+{
+ "artifact": "QNM_SPECTROSCOPY_PATH_STATUS_V1",
+ "generated_from_export_sha256": "85caecd59155d7d155dcb70e5cfa0b148366504778f45f51bc0f960294baab1a",
+ "chain": "SSZ-B1..B10 bridge milestone status on the frozen spectral export (predicted side only)",
+ "scope_note": "observation side (NICER etc.) is OWNED by a separate dedicated worker; this artifact stops at the frozen predicted-side status",
+ "b_status": {
+  "B1_EXPORT_PROVENANCE": {
+   "status": "CERTIFIED",
+   "evidence": "hash-bound load, window+health declared (tests test_spectral_import.py::test_b1_*)"
+  },
+  "B2_OPERATOR_RECONSTRUCTION": {
+   "status": "CERTIFIED",
+   "evidence": "symmetry contract + independent local generalized eigenanalysis (test_b2_*)"
+  },
+  "B3_INDEPENDENT_SOLVE": {
+   "status": "CERTIFIED_BOX_MODES_ONLY",
+   "evidence": "P1 weak-form solve per L in [6, 12, 20]; mass guard fail-closed; max residual 3.9e-18; TRUNCATED_BOX declared, NOT QNM"
+  },
+  "B4_RESOLUTION_CONVERGENCE": {
+   "status": "CERTIFIED_BOX_MODES_ONLY",
+   "evidence": "ladder [1, 2, 4, 8], criterion 4N->8N rel shift <1e-6 AND overlap>0.5; converged {'6': 12, '12': 12, '20': 12} of 12 modes per L"
+  },
+  "B5_RESIDUAL_NORMS": {
+   "status": "CERTIFIED",
+   "evidence": "normalized generalized-eigenproblem residuals, max 3.9e-18 across reported modes"
+  },
+  "B6_BOUNDARY_CONDITIONS": {
+   "status": "OPEN_DECLARED_LIMITATION",
+   "evidence": "TRUNCATED_BOX documented as declared limitation; physical BC layer deferred until closure N4/K_scalar health decision; wrong-boundary negative control fired at 1.44 rel"
+  },
+  "B7_CROSS_SOLVER": {
+   "status": "CERTIFIED",
+   "evidence": "bridge P1 assembly vs producer native_window npz (separate implementation): max rel diff L6=7.1e-10, L12=8.8e-10, L20=5.1e-10"
+  },
+  "B8_SECTOR_SEPARATION": {
+   "status": "OPEN",
+   "evidence": "export ships one coupled 3-field sector (parity decomposition not exported); per-mode field-fraction proxy recorded in artifact (dominant V-sector content 0.54-0.75, psi-sector 0.09-0.35); no parity/sector claim"
+  },
+  "B9_INVERSE": {
+   "status": "OPEN",
+   "evidence": "inverse contract deferred by user gate (same class as B8 inverse in REAL_SSZ_BRIDGE_VERDICT)"
+  },
+  "B10_NEGATIVE_CONTROLS": {
+   "status": "CERTIFIED",
+   "evidence": "corrupted_operator: PASS; sign_flipped_K: PASS; wrong_boundary: PASS; wrong_member_stretch: PASS; hash-mismatch refusal: PASS (test_spectral_import.py loader)"
+  }
+ },
+ "certified": [
+  "B1",
+  "B2",
+  "B5",
+  "B7",
+  "B10",
+  "B3/B4 as BOX-MODE certifications only (TRUNCATED_BOX, not QNM)"
+ ],
+ "open": [
+  "B6 physical-BC layer (TRUNCATED_BOX declared)",
+  "B8 sector/parity separation",
+  "B9 inverse"
+ ],
+ "blocked": [
+  "QNM claims of any kind \u2014 blocked until closure N4/K_scalar health decision lands on the producer side"
+ ],
+ "qnm_claims_allowed": false,
+ "disclaimer": "box-modes-not-QNMs: all eigenvalues are TRUNCATED_BOX Dirichlet modes of the exported operator on the healthy window; no quasinormal-mode claim is made or implied"
+}
