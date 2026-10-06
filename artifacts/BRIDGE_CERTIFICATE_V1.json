@@ -24,9 +24,9 @@
   }
  },
  "external_state": {
-  "bridge_repo_sha": "7065034f39e1348e61e91b9e048862a569e05f07",
+  "bridge_repo_sha": "99a08da0d0b82da7ecc912a8c7fc1108e8e3219c",
   "closure_member_sha": "5cb6d2701f28ee0c7bf18361784ebb2f4ff105360b95cd81fde48dde4015b74b",
-  "closure_repo_sha": "8c5ec652a6c807eec222c6c4eba0bf3aafe547bd",
+  "closure_repo_sha": "30a74d6b92c806da045becd6de846a58bc82911e",
   "sagnac_repo_sha": "be74157021b9a2bce78e5c301de769767b8473f0",
   "sagnac_verdict_sha": "055124379785c9bae338b5787096ba556389bf8103782c9d9b8050820d890251"
  },

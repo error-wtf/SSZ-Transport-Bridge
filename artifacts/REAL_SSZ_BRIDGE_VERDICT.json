@@ -7,6 +7,17 @@
   "B5_CONVERGENCE": "PASS",
   "B6_FALSIFIERS": "PASS",
   "B7_LIMITS": "PASS",
+  "_b5b6b7_evidence": {
+   "checks": {
+    "member_binding": true,
+    "verdict": true,
+    "verdict_commit": "d7b02d386618921dbe47a392c4e067336b621a48",
+    "audit_commit": "cc3df3d75d3821b9011eaa48ce8e012d45f6c6f7"
+   },
+   "G122": "G122=PASS grounding_exists=True",
+   "G119": "G119=PASS grounding_exists=True",
+   "G121": "G121=PASS grounding_exists=True"
+  },
   "B8_INVERSE": "REAL_SSZ_INVERSE_OPEN",
   "B9_INDEPENDENCE": "PASS"
  },
