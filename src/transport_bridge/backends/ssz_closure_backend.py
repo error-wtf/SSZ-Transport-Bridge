@@ -1,8 +1,21 @@
-"""SSZ closure backend — INDEPENDENT VALIDATOR.
+"""SSZ closure backend — INDEPENDENT RE-SOLVER (ADR-001, Variante B).
 
-CORE RULE: This backend is a JUDGE. It does NOT import physics functions from
-SSZ_FULL_CLOSURE. It consumes frozen metric data and performs independent
-numerical solves to certify the transport results.
+DECISION (2026-10-06, ADR-001): this backend is an independent JUDGE that
+RE-DERIVES the SSZ transport equations from frozen metric data and solves
+them numerically with its own integrators.  It does NOT import physics
+functions from SSZ_FULL_CLOSURE — only frozen member data (MODEL_LOCK ->
+member CSV) via hash-bound provenance.
+
+Semantics: `independent reimplementation from frozen metric data` — NOT
+`zero shared physics formulas`.  The earlier adapter wording was wrong for
+this backend and has been retired (docs/REAL_SSZ_BRIDGE_SPEC.md ADR-001).
+
+Every independently re-derived physics routine MUST be declared in
+INDEPENDENT_PHYSICS below.  The anti-circularity audit
+(tools/audit_backend_independence.py) enforces: (a) no closure-code
+imports, (b) no undeclared physics-like numerics, (c) registry entries
+present for every detected pattern.  This keeps the independence claim
+auditable instead of aspirational.
 
 Symmetry: static spherical geometry.
 """
@@ -22,6 +35,31 @@ from transport_bridge import (
     TransportOperator,
 )
 from transport_bridge.provenance import load_closure_provenance
+
+# --- Declared independent physics (audited registry) ---------------------
+# Every re-derived physics routine below MUST have an entry here.  The
+# anti-circularity audit cross-checks this registry against the AST.
+INDEPENDENT_PHYSICS = {
+    "null_geodesic_rhs": (
+        "Null geodesic RHS for static spherical metrics, independently "
+        "re-derived from ds^2 = -f dt^2 + dr^2/h + r^2 dphi^2: "
+        "dk^t/dlam = -(f'/f) k^t k^r; dk^r/dlam = -(h f'/2)(k^t)^2 "
+        "+ (h'/(2h))(k^r)^2 + h r (k^phi)^2; dk^phi/dlam = -(2/r) k^r k^phi. "
+        "Implemented in _independent_null_transport.rhs."
+    ),
+    "null_conserved_quantities": (
+        "E = f k^t, L = r^2 k^phi, norm = -f (k^t)^2 + (k^r)^2/h "
+        "+ r^2 (k^phi)^2; checked as conservation residuals along the "
+        "independent solution."
+    ),
+    "phase_integral": (
+        "Eikonal phase / Shapiro delay quadrature "
+        "integral dr/sqrt(f h) (trapezoid on the spline, 20000 points)."
+    ),
+    "redshift_ratio": (
+        "Static redshift sqrt(f_a / f_b) between endpoints."
+    ),
+}
 
 # --- Independent Numerical Solvers (The Judge's Tools) ---
 
@@ -95,8 +133,26 @@ OBSERVABLES = ObservableSet(
     inverse="", 
 )
 
+def closure_repo_path() -> Path:
+    """Fail-closed resolution of the closure checkout.
+
+    Priority: SSZ_FULL_CLOSURE_PATH env var -> default local layout.  Raises
+    with an actionable message when the checkout is unavailable — the judge
+    never guesses.
+    """
+    import os
+    p = os.environ.get("SSZ_FULL_CLOSURE_PATH",
+                       "/home/error/physics/clones/SSZ_FULL_CLOSURE")
+    path = Path(p)
+    if not (path / "MODEL_LOCK.json").exists():
+        raise RuntimeError(
+            f"SSZ_FULL_CLOSURE checkout not usable at {path} — set "
+            "SSZ_FULL_CLOSURE_PATH to a checkout containing MODEL_LOCK.json")
+    return path
+
+
 def make_operator(law: SignalLaw, r_a: float = 1.5, r_b: float = 1.6) -> TransportOperator:
-    repo_path = Path("/home/error/physics/clones/SSZ_FULL_CLOSURE")
+    repo_path = closure_repo_path()
     
     lock = json.loads((repo_path / "MODEL_LOCK.json").read_text())
     member_p = repo_path / lock["action_member_stream"]
@@ -117,7 +173,7 @@ def make_operator(law: SignalLaw, r_a: float = 1.5, r_b: float = 1.6) -> Transpo
     return TransportOperator(ARCHITECTURE, law, _solve)
 
 def provenance() -> dict[str, Any]:
-    repo_path = Path("/home/error/physics/clones/SSZ_FULL_CLOSURE")
+    repo_path = closure_repo_path()
     p = load_closure_provenance(repo_path)
     # Expose the full provenance binding, with the historical key names the
     # contract tests assert on:

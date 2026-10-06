@@ -46,17 +46,58 @@ def evaluate_milestone():
     # B4: Reversal Symmetry
     results["B4_REVERSAL"] = "OPEN" # Explicitly open per spec
 
-    # B5: Convergence Evidence
-    # In this milestone, we bind to G122 from the verdict
-    results["B5_CONVERGENCE"] = "PASS" if results.get("B1_PROVENANCE") == "PASS" else "FAIL"
+    # B5/B6/B7: REAL gate validation against the closure's own audit artifacts
+    # (ADR-001): each bridge gate reads the certified source gate record and
+    # verifies status, commit, and member binding — no B1 aliasing.
+    try:
+        repo_path = cb.closure_repo_path()
+        audit = json.loads(
+            (repo_path / "ai_analysis/critical_jsons/ABSOLUTE_FULL_CLOSURE_AUDIT.json"
+             ).read_text())
+        verdict = json.loads(
+            (repo_path / "ai_analysis/critical_jsons/TRUE_FULL_CLOSURE_VERDICT.json"
+             ).read_text())
+        prov = cb.provenance()
 
-    # B6: Falsifier Preservation
-    # Check if the backend can detect the negative controls if we were to inject them.
-    # For the adapter, we verify that the source verdict G119 is PASS.
-    results["B6_FALSIFIERS"] = "PASS" if results.get("B1_PROVENANCE") == "PASS" else "FAIL"
+        # The verdict + audit certify the FROZEN MEMBER, not the research
+        # branch head.  The strict binding is therefore member-hash equality;
+        # the audit commit is recorded as provenance info (it dates the audit
+        # run on the historical corpus).
+        member_ok = str(verdict.get("member_hash", "")).startswith(
+            str(prov.get("closure_member_sha256", "x")[:16]))
+        checks = {
+            "member_binding": member_ok,
+            "verdict": verdict.get("verdict") == "TRUE_FULL_CLOSURE_PASS",
+            "verdict_commit": verdict.get("git_commit"),
+            "audit_commit": audit.get("git_commit"),
+        }
 
-    # B7: Known Limits
-    results["B7_LIMITS"] = "PASS" if results.get("B1_PROVENANCE") == "PASS" else "FAIL"
+        def gate(name: str) -> tuple[bool, str]:
+            g = audit.get("gates", {}).get(name, {})
+            status = g.get("certified_status")
+            grounding = g.get("grounding", [])
+            grounded = all((repo_path / t).exists() for t in grounding)
+            return (status == "PASS" and grounded and len(grounding) > 0,
+                    f"{name}={status} grounding_exists={grounded}")
+
+        g122_ok, g122_info = gate("G122")
+        g119_ok, g119_info = gate("G119")
+        g121_ok, g121_info = gate("G121")
+
+        base_ok = checks["member_binding"] and checks["verdict"]
+        results["B5_CONVERGENCE"] = ("PASS" if base_ok and g122_ok else "FAIL: "
+                                      f"{g122_info} checks={checks}")
+        results["B6_FALSIFIERS"] = ("PASS" if base_ok and g119_ok else "FAIL: "
+                                     f"{g119_info} checks={checks}")
+        results["B7_LIMITS"] = ("PASS" if base_ok and g121_ok else "FAIL: "
+                                 f"{g121_info} checks={checks}")
+        results["_b5b6b7_evidence"] = {"checks": checks,
+                                        "G122": g122_info, "G119": g119_info,
+                                        "G121": g121_info}
+    except Exception as e:
+        results["B5_CONVERGENCE"] = f"FAIL: {e}"
+        results["B6_FALSIFIERS"] = f"FAIL: {e}"
+        results["B7_LIMITS"] = f"FAIL: {e}"
 
     # B8: Inverse Contract
     results["B8_INVERSE"] = "REAL_SSZ_INVERSE_OPEN"

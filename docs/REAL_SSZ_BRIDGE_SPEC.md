@@ -4,9 +4,24 @@
 
 Extend `SSZ-Transport-Bridge` from its current synthetic SSZ proxy to a **read-only adapter of the real `SSZ_FULL_CLOSURE` transport layer**, while preserving the bridge's core law:
 
-> Shared contracts and types; zero shared physics formulas.
+> Shared contracts and types; the closure backend independently re-derives
+> SSZ physics from frozen metric data (ADR-001).
 
-This bridge must not rederive or duplicate SSZ equations. The source of truth for SSZ physics remains `SSZ_FULL_CLOSURE`.
+**ADR-001 (2026-10-06, DECIDED — Variante B):** the `ssz_closure_backend` is
+an **independent re-solver**, not a pure adapter.  It re-derives the SSZ
+transport equations from frozen metric data and solves them with its own
+integrators, without importing closure code.  The earlier "zero shared
+physics formulas" wording described an adapter and is RETIRED: the backend
+does re-derive equations, and every re-derived routine is DECLARED in the
+audited `INDEPENDENT_PHYSICS` registry
+(`backends/ssz_closure_backend.py`, enforced by
+`tools/audit_backend_independence.py`, AST-based).  What remains forbidden:
+closure-CODE imports, hard-coded member observables, undeclared physics
+numerics.  The source of truth for SSZ physics remains `SSZ_FULL_CLOSURE`;
+the bridge's re-derivation exists to CROSS-CHECK it.
+
+This bridge must not *undeclaredly* duplicate SSZ equations. Declared
+independent re-derivation is its core function.
 
 ## Current three-layer architecture
 
@@ -100,10 +115,10 @@ It may:
 
 It must not:
 
-- copy the geodesic equations,
+- copy the geodesic equations *without declaring the re-derivation* (ADR-001: an independent re-derivation is allowed and must be registered),
 - copy Christoffels,
-- copy the phase integral,
-- reconstruct `f,h` independently,
+- copy the phase integral *undeclared*,
+- reconstruct `f,h` independently *beyond the declared frozen-data splines*,
 - fit new parameters,
 - change the frozen member,
 - silently fall back to a toy formula.
@@ -262,7 +277,7 @@ Source: `G121`.
 
 Use source-owned Schwarzschild / Newtonian / gamma-limit evidence as a structural known-limit contract.
 
-Again: no equations duplicated in the bridge.
+Again: no *undeclared* equations duplicated in the bridge (ADR-001: declared independent re-derivation is the backend's function).
 
 ## RB8 — Inverse contract
 
@@ -297,7 +312,7 @@ BR-R5 supported reversal symmetry
 BR-R6 source-owned convergence evidence
 BR-R7 source-owned falsifier preservation
 BR-R8 known-limit anchors
-BR-R9 no duplicated SSZ physics
+BR-R9 no *undeclared* duplicated SSZ physics (registry-audited, ADR-001)
 BR-R10 inverse explicitly OPEN or real
 ```
 
@@ -442,7 +457,7 @@ A milestone PASS requires all of the following:
 - no synthetic `frame_sign` result is reported as a real SSZ result.
 - unsupported symmetry/inverse contracts report OPEN, not fabricated PASS.
 - shared contract tests do not require Sagnac-specific odd parity for all backends.
-- independence audit finds zero duplicated executable SSZ physics.
+- independence audit passes under ADR-001 semantics: all re-derived physics declared in the INDEPENDENT_PHYSICS registry, zero closure-code imports, zero undeclared physics numerics.
 
 Only then may the bridge claim:
 

@@ -1,7 +1,7 @@
 # SSZ-Transport-Bridge
 
 Generic typed-contract bridge between transport systems.  Two read-only
-backends, one small shared vocabulary — **zero shared formulas**.
+backends, one small shared vocabulary — the closure backend **independently re-derives SSZ physics from frozen metric data** under a declared, audited registry (ADR-001).
 
 ## The core rule
 
@@ -22,7 +22,7 @@ class** as every other backend that does — nothing more, nothing less.
 |---|---|---|
 | `sagnac_backend` | validated (reference layer 0) | [Sagnac-Reference-Transport](https://github.com/error-wtf/Sagnac-Reference-Transport) — read-only adapter, no formulas here |
 | `ssz_synthetic_backend` | development control (toy frame-dragging proxy) | intentionally kept as negative/development control |
-| `ssz_closure_backend` | **REAL SSZ transport** — read-only adapter | [SSZ_FULL_CLOSURE](https://github.com/error-wtf/SSZ_FULL_CLOSURE) `postclosure/transport.py`: k^nu nabla_nu k^mu = 0, null congruence, eikonal phase S_r, redshift — zero physics in the bridge |
+| `ssz_closure_backend` | **REAL SSZ transport** — independent re-solver (ADR-001) | [SSZ_FULL_CLOSURE](https://github.com/error-wtf/SSZ_FULL_CLOSURE): consumes frozen metric data only; re-derives null geodesics, congruence, eikonal phase and redshift with its own integrators — all routines declared in the audited `INDEPENDENT_PHYSICS` registry |
 
 Direction-contract rule: static spherical SSZ declares **no** sign-swap
 involution (the Sagnac `v -> -v` symmetry is NOT universal physics).
@@ -60,7 +60,7 @@ is touched.
 Both backends green (8/8 contract tests).  The reference repo is
 validated to `SAGNAC_REFERENCE_CLOSURE_PASS` (SAG-S1..S10, 10/10
 negative controls); this bridge inherits that validation through the
-read-only adapter and adds the class-membership proof.
+independent re-solver (ADR-001) and adds the class-membership proof.
 
 ## Position in the overall chain
 
