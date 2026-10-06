@@ -407,5 +407,6 @@
   "note": "mass guard is the active negative control on this branch; corrupted_operator control blocked behind it"
  },
  "validator": "bridge independent chain, no closure imports",
- "wall_seconds": 5.0
+ "wall_seconds": 5.0,
+ "b8_verdict_update_0610_review": "Lino review correction: (a) the tracking numbers (overlaps > 1, field fractions up to 1e298) are DIAGNOSTIC MATERIAL from the broken norm on the indefinite mass matrix \u2014 not mode interpretations; (b) the correct fork was decided in closure V4_PHYSICAL_DOF_AUDIT_V1/REFINED: the negative direction is 100% chi(dphi) \u2014 constraint artifact, NOT a bulk ghost; (c) F.4-v2 (F4_FINITE_L_HEALTH_V4_KPHYS_V2.json) PASSES the full L=6..1000 ladder on the constraint-reduced (psi,V) operator (min \u03bb(K_phys) = +4.5e-06 .. +5.2e-09 > 0, \u03bb ~ 1/L scaling); (d) roadmap corrected: branch consistency \u2192 physical DOF audit \u2192 K_phys health \u2192 global exterior \u2192 physical BCs \u2192 coupled Jost+ECS. 'No horizon' does NOT imply 'no QNMs' \u2014 horizonless objects carry damped resonances with regularity-inside + outgoing-infinity BCs."
 }
