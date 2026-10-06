@@ -62,11 +62,14 @@ def main() -> int:
         # indefinite — certified mass_min_eigenvalue recorded above)
         from scipy.sparse.linalg import LinearOperator, eigsh, splu
         lu = splu(b_mat.tocsc())
-        Aop = LinearOperator(a_mat.shape, matvec=lambda x: lu.solve(a_mat @ x))
+        _a_mat, _lu = a_mat, lu  # bind loop variables explicitly (B023)
+        Aop = LinearOperator(a_mat.shape,
+                             matvec=lambda x, _a=_a_mat, _lu=_lu: _lu.solve(_a @ x))
         k = 12
         # smallest |lambda| of B^{-1}A via explicit shift-invert: ARPACK with
         # sigma=0 and the EXACT LU as OPinv (no iterative inner solve)
-        lu_op = LinearOperator(a_mat.shape, matvec=lambda x: lu.solve(x))
+        lu_op = LinearOperator(a_mat.shape,
+                               matvec=lambda x, _lu=_lu: _lu.solve(x))
         vals, vecs = eigsh(Aop, k=k, M=b_mat, sigma=0.0, which="LM",
                             OPinv=lu_op, tol=1e-10)
         order = np.argsort(np.abs(vals))
@@ -117,8 +120,9 @@ def main() -> int:
         from scipy.sparse.linalg import eigsh as _eigsh
         from scipy.sparse.linalg import splu
         lu2 = splu(b2_.tocsc())
-        Aop2 = LO(a2.shape, matvec=lambda x: lu2.solve(a2 @ x))
-        lu2op = LO(a2.shape, matvec=lambda x: lu2.solve(x))
+        _a2, _lu2 = a2, lu2  # bind loop variables explicitly (B023)
+        Aop2 = LO(a2.shape, matvec=lambda x, _a=_a2, _lu=_lu2: _lu.solve(_a @ x))
+        lu2op = LO(a2.shape, matvec=lambda x, _lu=_lu2: _lu.solve(x))
         v2_, w2_ = _eigsh(Aop2, k=12, M=b2_, sigma=0.0, which="LM",
                            OPinv=lu2op, tol=1e-10)
         o2 = np.argsort(np.abs(v2_))
@@ -154,7 +158,7 @@ def main() -> int:
     # path — recorded as a B8 verdict input, no bypass attempted.
     mats6 = {n: arrays[f"6_{n}"] for n in
              ("r", "K", "R", "G", "S", "M", "Dh1", "DeltaV", "pivotA0")}
-    a0, b0 = isl.assemble_box_pencil(mats6["r"], mats6["K"], mats6["G"],
+    _a0, b0 = isl.assemble_box_pencil(mats6["r"], mats6["K"], mats6["G"],
                                       mats6["S"], mats6["M"])
     mass6 = isl.mass_min_eigenvalue(b0)
     ctrl = {"mass_min_eigenvalue_L6": float(mass6),
