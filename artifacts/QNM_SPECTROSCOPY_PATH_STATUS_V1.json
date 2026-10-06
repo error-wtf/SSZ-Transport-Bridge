@@ -1,5 +1,5 @@
 {
- "artifact": "QNM_SPECTROSCOPY_PATH_STATUS_V1",
+ "artifact": "QNM_SPECTROSCOPY_PATH_STATUS_V2",
  "generated_from_export_sha256": "85caecd59155d7d155dcb70e5cfa0b148366504778f45f51bc0f960294baab1a",
  "chain": "SSZ-B1..B10 bridge milestone status on the frozen spectral export (predicted side only)",
  "scope_note": "observation side (NICER etc.) is OWNED by a separate dedicated worker; this artifact stops at the frozen predicted-side status",
@@ -59,8 +59,15 @@
   "B9 inverse"
  ],
  "blocked": [
-  "QNM claims of any kind \u2014 blocked until closure N4/K_scalar health decision lands on the producer side"
+  "QNM claims of any kind \u2014 blocked until a GHOST-FREE V4 branch passes S-contract repair/derivation (symbolic; NO tolerance relaxation) -> B8 sector separation -> B6 physical BC layer -> F.4 finite-L health"
  ],
  "qnm_claims_allowed": false,
- "disclaimer": "box-modes-not-QNMs: all eigenvalues are TRUNCATED_BOX Dirichlet modes of the exported operator on the healthy window; no quasinormal-mode claim is made or implied"
+ "disclaimer": "box-modes-not-QNMs: all eigenvalues are TRUNCATED_BOX Dirichlet modes of the exported operator on the healthy window; no quasinormal-mode claim is made or implied. N4 has landed producer-side; QNM path remains closed behind the V4 S-contract + B8 + B6 + F.4 chain.",
+ "supersedes": "QNM_SPECTROSCOPY_PATH_STATUS_V1",
+ "producer_state": {
+  "closure_branch": "spectroscopy-real-data-20261004",
+  "closure_head": "ff2ef4f (README research banner; physics state from 2437b6f N4_V4_BRANCH_VERBAND)",
+  "n4_decision": "LANDED (V4): sign(K_scalar) = -sign(a1*eps) over 8 scanned branch combinations; ghost side H3_PHYSICAL_GHOST, opposite side K>0 H1_CANDIDATE_PENDING_FINITE_L_HEALTH",
+  "finite_l_health": "BLOCKED_FAIL_CLOSED on 41-slot V4 S-antisymmetry producer-contract mismatch (F4_FINITE_L_HEALTH_V4_ATTEMPT_BLOCKED_RECORD.json)"
+ }
 }
