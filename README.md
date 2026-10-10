@@ -62,6 +62,20 @@ validated to `SAGNAC_REFERENCE_CLOSURE_PASS` (SAG-S1..S10, 10/10
 negative controls); this bridge inherits that validation through the
 independent re-solver (ADR-001) and adds the class-membership proof.
 
+### B6 independent Jost/ECS certification (in progress)
+
+Three-tier structure (agreed 2026-10-10): shared physical foundations
+are copied from SSZ_FULL_CLOSURE as frozen, hash-bound inputs
+(`data/frozen_specs/`, `PROVENANCE_V1.json`); the resonance machinery
+is implemented independently (`src/transport_bridge/independent_jost_v1.py`,
+no Closure solver code read or copied); comparison happens only after
+candidate freeze.  Step 0 (analytic square-well known-answer controls)
+is **CERTIFIED**: 8/8 gates PASS — blind-freeze ordering, analytic
+residual (observed 4e-14..9e-14, mpmath 40 digits), all 6 reference
+poles reproduced blind (dist 4e-14..2.4e-13), negative controls
+separate the Neumann/Dirichlet root families.  This certifies the
+machinery only, not yet the physical 3-DOF QNM problem (step 1).
+
 ## Position in the overall chain
 
 ```
