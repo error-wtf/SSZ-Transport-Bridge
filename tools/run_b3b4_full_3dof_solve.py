@@ -32,8 +32,12 @@ BRIDGE = Path("/home/error/physics/clones/SSZ-Transport-Bridge")
 sys.path.insert(0, str(BRIDGE / "src"))
 
 from transport_bridge.independent_solve_3dof import (  # noqa: E402
-    EXPECTED_SHA256, RESEARCH_REPO, _assemble_window_sparse,
-    box_solve_ladder, load_export_3dof, solve_box_modes,
+    EXPECTED_SHA256,
+    RESEARCH_REPO,
+    _assemble_window_sparse,
+    box_solve_ladder,
+    load_export_3dof,
+    solve_box_modes,
 )
 
 OUT = BRIDGE / "artifacts" / "SSZ_B3_B4_FULL_3DOF_INDEPENDENT_SOLVE_V1.json"
@@ -68,7 +72,7 @@ def main() -> int:
     ladder = [len(range(0, m, s)) for s in (8, 4, 2, 1)]
     ladder_out = box_solve_ladder(ex, ladder=ladder, k=12)
     L = {int(k): np.array(v) for k, v in ladder_out["levels"].items()}
-    n4, n3, n2, n1 = ladder[3], ladder[2], ladder[1], ladder[0]
+    n4, n3, n2 = ladder[3], ladder[2], ladder[1]
     s1 = np.abs(L[n4] - L[n3])
     s2 = np.abs(L[n3] - L[n2])
     orders = []

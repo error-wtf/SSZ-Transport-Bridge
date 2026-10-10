@@ -86,11 +86,12 @@ def load_export_3dof(repo: Path = RESEARCH_REPO) -> dict[str, Any]:
 
 def structural_gates(ex: dict[str, Any]) -> dict[str, Any]:
     """Elementwise structural checks on the FULL 3-channel operators."""
-    K, G, S, M, R = ex["K"], ex["G"], ex["S"], ex["M"], ex["R"]
+    K, G, S, _M, _R = ex["K"], ex["G"], ex["S"], ex["M"], ex["R"]
     Ksym = float(np.max(np.abs(K - np.swapaxes(K, 1, 2))))
     Gsym = float(np.max(np.abs(G - np.swapaxes(G, 1, 2))))
     Sdef = float(np.max(np.abs(S + np.swapaxes(S, 1, 2))))
     Sscale = float(np.max(np.abs(S)))
+    R = ex["R"]
     Rmax = float(np.max(np.abs(R)))
     # mass guard: min eigenvalue of K on the window (fail-closed)
     Kw = K[ex["win_mask"]]
@@ -131,10 +132,14 @@ def _assemble_window(r: np.ndarray, K: np.ndarray, G: np.ndarray,
     B = np.zeros((3 * n, 3 * n))
     for i in range(n - 1):
         he = h[i]
-        Gbar = 0.5 * (G[i] + G[i + 1]); Gbar = 0.5 * (Gbar + Gbar.T)
-        Sbar = 0.5 * (S[i] + S[i + 1]); Sbar = 0.5 * (Sbar - Sbar.T)
-        Mbar = 0.5 * (M[i] + M[i + 1]); Mbar = 0.5 * (Mbar + Mbar.T)
-        Kb = 0.5 * (K[i] + K[i + 1]);   Kb = 0.5 * (Kb + Kb.T)
+        Gbar = 0.5 * (G[i] + G[i + 1])
+        Gbar = 0.5 * (Gbar + Gbar.T)
+        Sbar = 0.5 * (S[i] + S[i + 1])
+        Sbar = 0.5 * (Sbar - Sbar.T)
+        Mbar = 0.5 * (M[i] + M[i + 1])
+        Mbar = 0.5 * (Mbar + Mbar.T)
+        Kb = 0.5 * (K[i] + K[i + 1])
+        Kb = 0.5 * (Kb + Kb.T)
         w1 = he / 2.0
         for a in (i, i + 1):
             sl = slice(3 * a, 3 * a + 3)
@@ -163,16 +168,22 @@ def _assemble_window_sparse(r: np.ndarray, K: np.ndarray, G: np.ndarray,
     rows, cols, va, vb = [], [], [], []
     for i in range(n - 1):
         he = h[i]
-        Gbar = 0.5 * (G[i] + G[i + 1]); Gbar = 0.5 * (Gbar + Gbar.T)
-        Sbar = 0.5 * (S[i] + S[i + 1]); Sbar = 0.5 * (Sbar - Sbar.T)
-        Mbar = 0.5 * (M[i] + M[i + 1]); Mbar = 0.5 * (Mbar + Mbar.T)
-        Kb = 0.5 * (K[i] + K[i + 1]);   Kb = 0.5 * (Kb + Kb.T)
+        Gbar = 0.5 * (G[i] + G[i + 1])
+        Gbar = 0.5 * (Gbar + Gbar.T)
+        Sbar = 0.5 * (S[i] + S[i + 1])
+        Sbar = 0.5 * (Sbar - Sbar.T)
+        Mbar = 0.5 * (M[i] + M[i + 1])
+        Mbar = 0.5 * (Mbar + Mbar.T)
+        Kb = 0.5 * (K[i] + K[i + 1])
+        Kb = 0.5 * (Kb + Kb.T)
         w1 = he / 2.0
         for a in (i, i + 1):
             for p in range(3):
                 for q in range(3):
-                    rows.append(3 * a + p); cols.append(3 * a + q)
-                    va.append(w1 * Mbar[p, q]); vb.append(w1 * Kb[p, q])
+                    rows.append(3 * a + p)
+                    cols.append(3 * a + q)
+                    va.append(w1 * Mbar[p, q])
+                    vb.append(w1 * Kb[p, q])
         gs = Gbar / he
         s2 = Sbar / 2.0
         for p in range(3):
@@ -181,8 +192,10 @@ def _assemble_window_sparse(r: np.ndarray, K: np.ndarray, G: np.ndarray,
                                   (i + 1, i + 1, gs[p, q]),
                                   (i, i + 1, -gs[p, q] + s2[p, q]),
                                   (i + 1, i, -gs[p, q] - s2[p, q])):
-                    rows.append(3 * a + p); cols.append(3 * b + q)
-                    va.append(v); vb.append(0.0)  # B: no stencil contribution
+                    rows.append(3 * a + p)
+                    cols.append(3 * b + q)
+                    va.append(v)
+                    vb.append(0.0)  # B: no stencil contribution
     N = 3 * n
     A = coo_matrix((va, (rows, cols)), shape=(N, N)).tocsc()
     B = coo_matrix((vb, (rows, cols)), shape=(N, N)).tocsc()
