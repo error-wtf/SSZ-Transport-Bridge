@@ -1,0 +1,62 @@
+{
+ "audit": "V4_PHYSICAL_BC_V2_3DOF",
+ "branch": {
+  "a1": -0.5,
+  "eps": -0.3
+ },
+ "provenance": "derived from the CONTINUED (-0.5,-0.3) 3-channel exterior; supersedes all +0.5/2-channel BC notes; Schwarzschild horizon BCs are INAPPLICABLE (branch is horizonless, regular interior)",
+ "inner_bc": {
+  "r_inner_edge": 0.05,
+  "f_min_inner": 0.2481743215283121,
+  "h_min_inner": 0.998391699490542,
+  "all_finite": true,
+  "max_abs_f_derivative_inner": 0.013764671190440942,
+  "basis": "the integrated V4 branch itself provides the regular interior solution; the inner BC for the perturbations is regularity of (psi, dphi, V) at the inner window edge, matching this smooth background"
+ },
+ "outer_bc": {
+  "f_inf": 0.24617405,
+  "h_inf": 0.99945765,
+  "phi_inf": 0.98746435,
+  "wave_speed_ratio_dr_star_dr": 2.01572635,
+  "normalized_tortoise_slope_R_star": 1.00012136,
+  "outgoing_exponent": "Psi_ch ~ A_ch * exp(+i omega_t r_star) for each channel ch in {psi, dphi, V}, common r_star from the shared metric",
+  "channel_structure": "the 3x3 K/G/S/M blocks couple the channels; the asymptotic fundamental matrix is diagonal in the channel basis at leading order (metric-driven speeds are common), with coupling corrections decaying as the 1/r tail of the geometry"
+ },
+ "conventions": {
+  "time": "T = sqrt(f_inf) * t",
+  "sqrt_f_inf": 0.49615929,
+  "tortoise": "R_star = sqrt(f_inf) * r_star",
+  "frequency": "Omega_inf = omega_t / sqrt(f_inf)",
+  "Omega_inf_factor": 2.01548174,
+  "supersedes": "Omega_inf factor 1.9953 from the OLD +0.5 branch \u2014 branch-stale, do not use"
+ },
+ "hashes": {
+  "operator_npz": "ff2087354a78826a021a4ffe0c6d18f066a8d666fe7af8166cd29eebdc8b1b90",
+  "branch": {
+   "a1": -0.5,
+   "eps": -0.3
+  },
+  "prior_artifacts": {
+   "V4_UNREDUCED_CONSTRAINT_RANK_V1": "b1da5eb82aeb34e9e951ddd1e5d2f0cab5d63f81dd428c6d327fad34219dc22b",
+   "V4_FULL_3DOF_BRANCH_HEALTH_V1": "5a146f769e7f3c5e477d43556ee7361d37c0f03622baef2f9d1cd508d577ac04",
+   "V4_FULL_3DOF_OPERATOR_V2_json": "bcb708ed3a9044008a753a3de524943528d031331b16f74f51028da09b59a455",
+   "V4_CURVATURE_BENCHMARKS_V3": "81cf52cadf804be7e8d2b7abb217f0dd0a4ca22732444e0aa9bf245aa2322b4d"
+  }
+ },
+ "gate_consumers": [
+  "COUPLED_RESONANCE_SOLVER_V1",
+  "C-R1 Jost/ECS agreement",
+  "C-R2..C-R5 convergence/stability gates"
+ ],
+ "wall_seconds": 1.2,
+ "channel_dispersion_measured": {
+  "source": "SOLVER_PREFLIGHT_V1 P1 (det P_inf(omega,k)=0 at r=60)",
+  "k_over_omega": {
+   "psi": 2.0156147,
+   "dphi": 0.0362735,
+   "V": 2.0157527
+  },
+  "verdict": "CHANNEL_SPECIFIC_SPEEDS \u2014 the common metric-driven speed holds for TWO channels (2.0156/2.0158 \u2248 Omega_inf factor) but the third (dphi-associated) channel is ~56x slower. The solver MUST use per-channel k_j in the outgoing BC: Psi_j ~ A_j exp(+i omega_t k_j r_star / omega_t)... i.e. exp(+i omega_t r_star) for the fast channels and exp(+i 0.0363 omega_t r_star) for the slow channel.",
+  "common_speed_bc_invalid": true
+ }
+}

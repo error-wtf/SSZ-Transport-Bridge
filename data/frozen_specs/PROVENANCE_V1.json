@@ -1,0 +1,22 @@
+{
+ "audit": "BRIDGE_FROZEN_SPEC_PROVENANCE_V1",
+ "purpose": "Level-1 shared physical foundations copied from SSZ_FULL_CLOSURE per the three-tier agreement: frozen operator specs, BCs, Frobenius data, analytic known-answer controls. These are INPUTS, not independent confirmation.",
+ "source_repo": "github.com/error-wtf/SSZ_FULL_CLOSURE",
+ "source_branch": "spectroscopy-real-data-20261004",
+ "source_commit": "06adce5194a88903e912e4ee0cb6235ff057b1a0",
+ "specs": {
+  "HALF_LINE_SQUARE_WELL_REFERENCE_ROOTS_V2.json": {
+   "sha256": "e29640c1f0a0987ca316e5e7d59fb17a850d52338f7508d24d9c841db086cc13",
+   "bytes": 649
+  },
+  "THREE_CHANNEL_REFERENCE_POLES_V1.json": {
+   "sha256": "493fb6755bddd7fb8a4b10fc605b112cf867bef6c295d72b4b676df2ff7c1211",
+   "bytes": 1215
+  },
+  "V4_PHYSICAL_BC_V2_3DOF.json": {
+   "sha256": "380b0f0ee85b0632b663276526edc9d187fed648c117b25a0d08f32c2249b9f8",
+   "bytes": 2967
+  }
+ },
+ "usage_rule": "Reference poles and root lists are used ONLY for the final comparison after the Bridge freezes its own candidates. They must never seed or steer the Bridge root search."
+}
