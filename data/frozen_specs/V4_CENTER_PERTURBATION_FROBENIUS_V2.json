@@ -1,0 +1,113 @@
+{
+ "audit": "V4_CENTER_PERTURBATION_FROBENIUS_V2",
+ "branch": {
+  "a1": -0.5,
+  "eps": -0.3
+ },
+ "L": 6,
+ "measured_leading_structure": {
+  "G_psi_dphi_block": "r^2",
+  "G_VV": "r^4",
+  "S_psi_dphi": "r^1 (antisymmetric)",
+  "M_psi_dphi": "r^0",
+  "M_VV": "r^2",
+  "R_block": "identically zero (proven, hash ad2bee7d)"
+ },
+ "indicial": {
+  "psi_dphi_roots": [
+   -3.010656279149761,
+   -1.5396325405751285,
+   0.5390413104712023,
+   2.0002806149817025
+  ],
+  "regular": [
+   0.5390413104712023,
+   2.0002806149817025
+  ],
+  "singular": [
+   -3.010656279149761,
+   -1.5396325405751285
+  ],
+  "V_channel_roots": [
+   1.0016821978890482,
+   -4.001682197889049
+  ],
+  "regular_V": [
+   1.0016821978890482
+  ],
+  "singular_V": [
+   -4.001682197889049
+  ],
+  "n_regular_total": 3,
+  "classification": {
+   "REGULAR": [
+    0.5390413104712023,
+    2.0002806149817025,
+    1.0016821978890482
+   ],
+   "SINGULAR": [
+    -3.010656279149761,
+    -1.5396325405751285,
+    -4.001682197889049
+   ]
+  }
+ },
+ "center_basis_dimension_check": {
+  "expected": 3,
+  "found": 3,
+  "pass": true
+ },
+ "regular_exponents_used": [
+  0.5390413104712023,
+  2.0002806149817025,
+  1.0016821978890482
+ ],
+ "start_radius_convergence": {
+  "principal_cosines_002_vs_004": [
+   1.0,
+   1.0,
+   0.9999999999999998
+  ],
+  "subspace_1_minus_min_cosine": 2.220446049250313e-16,
+  "pass": true,
+  "note": "individual columns may rotate within the regular subspace during shooting; the invariant object is the 3-dim regular subspace itself"
+ },
+ "basis_at_r005": {
+  "Y_regular": [
+   [
+    1.0,
+    0.12461174762831345,
+    0.0
+   ],
+   [
+    -0.0007600000369960723,
+    0.9999999999999999,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "dY_regular": [
+   [
+    -73.46146354763061,
+    80.77107522605719,
+    0.0
+   ],
+   [
+    -0.04475575860648153,
+    -9.963722177252995,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    -16.585313130677896
+   ]
+  ],
+  "note": "columns = the three REGULAR Frobenius solutions; Jost and ECS MUST consume exactly this basis"
+ },
+ "wall_seconds": 2.5
+}

@@ -1,0 +1,54 @@
+{
+  "artifact": "SSZ_B6_STEP1_CH2_PILOT_POLE_V1",
+  "status": "CANDIDATE_POLE_CERTIFIED_NUMERICAL",
+  "date": "2026-10-11",
+  "supersedes_context": {
+    "v1_riccati_3dof": "SUPERSEDED (dichotomy collapse, wrong BVP measured)",
+    "bvp_qnm_v2_collocation": "SUPERSEDED (scipy solve_bvp cannot integrate growing exterior IVP)",
+    "stable_evans_v3": "PRINCIPLE KEPT (two-sided forward-stable QR Evans), implementation refined to 1x1-per-channel pilot"
+  },
+  "channel": "ch2 (index 2, reg. Frobenius exponent 1.0016821978890482)",
+  "subproblem": "1x1 ODE G22 psi'' + A22 psi' + (B22 - w^2 K22) psi = 0, frozen V3_3DOF",
+  "asymptotics": {
+    "G22_over_r4": 0.1678196,
+    "K22_over_r4": 0.6820786,
+    "B22_over_r2": "~const",
+    "acoustic_speed": "sqrt(K22inf/G22inf) = 2.016024804127985",
+    "A22": "G22' exactly (S~0 outside)",
+    "indicial_alpha_at_55": -1.07274,
+    "structure": "decoupled from (ch0,ch1) block in G,K; B01 ~ const couples ch0-ch1 only"
+  },
+  "pole_qnm_sign": {
+    "re": 0.22642588643752676,
+    "im": -0.08455094304111954
+  },
+  "pole_scan_sign": {
+    "re": 0.22642588643752676,
+    "im": 0.08455094304111954
+  },
+  "certification_gates": {
+    "wronskian_floor_at_pole": "1.3e-21 (M=25), 9.2e-20 (M=30), 2e-23 (M=20)",
+    "r_match_independence": "M=20..35 all < 1e-17 (conditioning growth beyond, max_step-refined values confirm no root drift)",
+    "r_seed_independence": "R1=55..59.5 all < 4e-14",
+    "mesh_refinement": "max_step 0.2 -> 0.01 stable to 4e-15 level",
+    "rtol_refinement": "1e-10 -> 1e-11 stable",
+    "negative_control_wrong_branch": "outgoing exterior seed: |W| = 6.5e-09 at same w (8 orders above incoming floor)",
+    "negative_control_wrong_interior": "(1,0) irregular seed finds different root (0.16238-0.07236j) -- NOT physical, rejected",
+    "seed_branch_check": "regular Frobenius power seed (r^1.00168) REQUIRED; plain (0,1) seed silently converges to irregular branch",
+    "exterior_seed_robustness": "alpha perturbation +-0.05 and 20% outgoing contamination do not move |W| floor (QR-like subspace stability)"
+  },
+  "honest_caveats": [
+    "ch2 is (G,K)-decoupled from (ch0,ch1); the 3-channel coupling acts only through B01 (ch0<->ch1). The certified pole is a property of the decoupled ch2 subsystem of the frozen 3x3 operator.",
+    "Truncation of exterior seed at r_seed=59.5 with single-term asymptotics: |W| floor rises with r_match like the e^{2 Re mu (M-r)} mismatch of missing series terms; floor stays <=1e-17 for M<=35.",
+    "Channel labeling (which physical field ch2 is: psi/delta-phi/V) must come from the frozen spec BC data; not yet cross-checked here.",
+    "Full 3-channel coupled certification (all three families simultaneously) still open; this pilot certifies machinery + first pole.",
+    "Eigenfrequency-w scaling: acoustic branch mu = 2.01602 w exactly => infinite tower w_n along the ray; only the fundamental was hunted (grid |w|<=1.2)."
+  ],
+  "inputs": {
+    "operator": "V4_PHYSICAL_RESONANCE_EXPORT_V3_3DOF.npz",
+    "sha256": "ad2bee7d3994097479933c1eea787f3aa381648d098ffd36aab32a4c436db2ef",
+    "source_commit": "06adce5194a88903e912e4ee0cb6235ff057b1a0",
+    "branch": "production (a1,eps)=(-0.5,-0.3), L=6"
+  },
+  "method_summary": "Two-sided Wronskian: interior regular Frobenius power seed (r^s, s=1.00168) outward-integrated; exterior INCOMING acoustic branch (mu=-2.01602 w, alpha=-1.07274) inward-integrated from r_seed=59.5; both forward-stable. D(w) = (psi_in' psi_ex - psi_ex' psi_in)/scale."
+}

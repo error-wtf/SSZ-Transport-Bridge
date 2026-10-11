@@ -1,0 +1,50 @@
+{
+    "audit": "BRIDGE_FROZEN_SPEC_PROVENANCE_V2_B6_STEP1",
+    "purpose": "Level-1 shared physical foundations for B6 step 1 (physical 3-DOF QNM problem, L=6): operator export, ODE convention, Frobenius exponents, asymptotic state, per-channel outgoing BC data, and the preregistered scan domain. These are INPUTS copied from SSZ_FULL_CLOSURE, not independent confirmation. The resonance machinery is implemented independently in the Bridge (level 2); comparison with Closure findings happens only after Bridge candidate freeze (level 3).",
+    "source_repo": "github.com/error-wtf/SSZ_FULL_CLOSURE",
+    "source_branch": "spectroscopy-real-data-20261004",
+    "source_commit": "06adce5194a88903e912e4ee0cb6235ff057b1a0",
+    "specs": {
+        "V4_PHYSICAL_RESONANCE_EXPORT_V3_3DOF.npz": {
+            "sha256": "ad2bee7d3994097479933c1eea787f3aa381648d098ffd36aab32a4c436db2ef",
+            "role": "frozen operator: r grid (4100 nodes), K/G/S/M_phys 3x3 blocks (L=6), R_phys (proven identically zero), background f/h/phi",
+            "verified_byte_identical_to_source": true
+        },
+        "V4_PHYSICAL_RESONANCE_EXPORT_V3_3DOF.json": {
+            "sha256": "fa9e7b7b58b417b1390aab0eff537c1daa93b878c7b2adaa018499cf8f50ece5",
+            "role": "operator metadata: domain, K_phys health, asymptotic normalization, R-block proof"
+        },
+        "V4_CENTER_PERTURBATION_FROBENIUS_V2.json": {
+            "sha256": "775512164417fab9481e1787b8c06738ce3b3581d0f1a5e19b3979d4cefe2852",
+            "role": "Frobenius/indicial data at r->0: regular exponents (psi,dphi): 0.5390413104712023, 2.0002806149817025; regular V: 1.0016821978890482; singular exponents excluded"
+        },
+        "V4_PHYSICAL_BC_V2_3DOF.json": {
+            "sha256": "380b0f0ee85b0632b663276526edc9d187fed648c117b25a0d08f32c2249b9f8",
+            "role": "measured asymptotic state, time/tortoise/frequency conventions (Omega_inf = omega_t / sqrt(f_inf), factor 2.01548174), inner regularity BC"
+        },
+        "SOLVER_PREFLIGHT_V1.json": {
+            "sha256": "41a6baaa9bd022a095eea8695b8f1cf4edad84d8812e115efe1e365d02b7c29c",
+            "role": "per-channel asymptotic dispersion (P1): k/omega_t = 2.0156147 (psi), 0.0362735 (dphi), 2.0157527 (V); common_speed_bc_invalid=true -> solver MUST use per-channel k_j; outer-normalization convergence (P2, slow 1/r tail, f_inf for solver = 0.24588742545)"
+        },
+        "SSZ_DOMAIN_EXPANSION_V1_PREREGISTRATION.json": {
+            "sha256": "78301ad7d60c5eb26ee07da81e2ed16d1c502560f99302cf6c8bcba69a3c7a4a",
+            "role": "preregistered scan domain for L=6 (tiles D1/D2/D3 in Re_omega_t x Im_omega_t; seal verified against NO_CERTIFIED_RESONANCE_IN_EXPANDED_DOMAIN_V1). Bridge re-scans the SAME frozen domain; boxes are immutable."
+        }
+    },
+    "ode_convention": {
+        "equation": "G(r) Psi'' + (G'(r) - S(r)) Psi' + (M(r) + S'(r)/2 - omega^2 K(r)) Psi = 0",
+        "basis": ["psi", "dphi", "V"],
+        "S_antisymmetrized": true,
+        "R_block": "identically zero (proven); consumed as zero",
+        "derivatives": "G', S' as central differences of the exported arrays (grid is non-uniform: dense window + logarithmic exterior)",
+        "asymptotic_pencil": "P(omega,k) = omega^2 K - k^2 G + i k (G' - S) - (M + S'/2) = 0 evaluated on the exported edge blocks",
+        "frequency_convention": "omega_t in t-time; Omega_inf = omega_t / 0.49615929 (report BOTH)",
+        "outgoing_bc": "per channel j: Psi_j ~ A_j exp(+i k_j(omega) r_star) with k_j(omega) from the edge pencil solved PER omega (no fixed k/omega ratio, no common speed)"
+    },
+    "usage_rule": "Reference poles and Closure scan verdicts are used ONLY for the final comparison after the Bridge freezes its own candidates. They must never seed or steer the Bridge root search. Provenance of the ODE convention: no standalone derivation document exists in Closure, so the equation form above was TRANSCRIBED from the Closure producer/solver code (run_jost_discovery_v2.py rhs()) as a mathematical specification — permitted as level 1 (shared equations/conventions). No solver implementation code was copied; the Bridge implements its own discretization, integration, root finding, and basis construction from the frozen exponents.",
+    "closure_prior_verdict_sealed_until_comparison": {
+        "artifact": "NO_CERTIFIED_RESONANCE_IN_EXPANDED_DOMAIN_V1.json",
+        "kept_in_closure_repo_only": true,
+        "opened_only_after_bridge_candidate_freeze": true
+    }
+}

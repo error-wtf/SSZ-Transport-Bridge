@@ -1,0 +1,86 @@
+{
+  "artifact": "SSZ_DOMAIN_EXPANSION_V1_PREREGISTRATION",
+  "created_utc": "2026-10-08T19:30:11+00:00",
+  "closure_head": "b20bed92a9b53239f32616ed24629d1b66e2fd9d",
+  "seal_sha256": "e51ea2d2dfc666b80a184671f7d1c33dc2ece4ba8998c725251e7218b0737b62",
+  "branch_fixed": {
+    "a1": -0.5,
+    "eps": -0.3,
+    "L": 6
+  },
+  "physical_fields": [
+    "psi",
+    "dphi",
+    "V"
+  ],
+  "solver_constraint": "certified JOST_V2_2 + ECS_V2_2 only; NO algorithm/threshold changes; no solver reads the other's candidates",
+  "tiles": {
+    "D1_HIGH_RE": {
+      "Re_omega_t": [
+        1.5,
+        3.0
+      ],
+      "Im_omega_t": [
+        -0.8,
+        -0.05
+      ]
+    },
+    "D2_DEEP_IM": {
+      "Re_omega_t": [
+        0.05,
+        1.5
+      ],
+      "Im_omega_t": [
+        -2.0,
+        -0.8
+      ]
+    },
+    "D3_HIGH_RE_DEEP_IM": {
+      "Re_omega_t": [
+        1.5,
+        3.0
+      ],
+      "Im_omega_t": [
+        -2.0,
+        -0.8
+      ]
+    }
+  },
+  "tiles_immutable": "No box may be moved after any candidate inspection.",
+  "combined_coverage_after_completion": {
+    "Re_omega_t": [
+      0.05,
+      3.0
+    ],
+    "Im_omega_t": [
+      -2.0,
+      -0.05
+    ],
+    "note": "union with the already-scanned original box [0.05,1.5]x[-0.8,-0.05]; D1/D2/D3 are disjoint and complete the union"
+  },
+  "frequency_symmetry_check_required": {
+    "question": "does the spectrum obey omega -> -omega* under the current time convention+BCs?",
+    "protocol": "derive from the real-coefficient/operator structure BEFORE spending compute on Re<0; if YES, record the proof and the positive-Re search covers the mirror; if NO/unresolved, declare a separate negative-Re tile later. Do not assume silently."
+  },
+  "discovery_protocol": {
+    "jost": "coarse-to-fine per tile; adaptive refinement rule declared algorithmically per tile BEFORE evaluation; store omega, Evans/log-derivative metric, scan spacing, refinement ladder, r_match stability, channel branch identities",
+    "ecs": "independent residual-validated pairs only; track pencil residual, theta/tail/grid trajectories, continuum-band classification, stationarity; not every residual-valid eigenvalue is a resonance \u2014 must separate from the rotating continuum and pass the certified gates"
+  },
+  "matching_rule": "only after all six candidate files hashed: common survivor of Jost candidate AND ECS stationary candidate AND all C-R gates",
+  "frequency_conventions": {
+    "omega_t": "raw solver frequency",
+    "Omega_inf": "omega_t / sqrt(f_inf) with the certified branch asymptotic normalization (f_inf=0.24588743 Richardson); the old +a1 factor is NOT used"
+  },
+  "outcomes": {
+    "common_poles": "CERTIFIED_RESONANCE_CATALOG_V2_(expanded) bound to solver certificate SHA + operator SHA + this preregistration SHA + candidate artifacts + Closure SHA; V1/V2 catalogs remain superseded",
+    "no_poles": "NO_CERTIFIED_RESONANCE_IN_EXPANDED_DOMAIN_V1 with exact scope (a1=-0.5,eps=-0.3,L=6,Re[0.05,3.0],Im[-2.0,-0.05]) and no_broader_no_qnm_claim=true"
+  },
+  "next_preregistered_ladder_if_empty": [
+    "L=12",
+    "L=20",
+    "L=42",
+    "then branch (a1=-0.5,eps=+0.3) starting from the original small box"
+  ],
+  "observational_seal": "NICER/GWOSC stay fetched-but-sealed: no peak locations, no mass-derived windows, no detector features may influence D1/D2/D3 or refinement",
+  "continuous_execution": "commit preregistration, then D1 Jost+ECS, D2, D3, freeze candidates, match, gates, verdict; stop only for genuine numerical failure, certificate violation, or branch/operator inconsistency"
+}

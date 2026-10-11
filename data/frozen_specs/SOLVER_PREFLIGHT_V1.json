@@ -1,0 +1,170 @@
+{
+ "audit": "SOLVER_PREFLIGHT_V1",
+ "branch": {
+  "a1": -0.5,
+  "eps": -0.3
+ },
+ "p2_continuation": {
+  "reached_r480": true,
+  "r_reached": 480.0
+ },
+ "p2_outer_normalization_convergence": {
+  "r60": {
+   "f": 0.2461740453,
+   "h": 0.9994576497,
+   "sqrt_f": 0.4961592943,
+   "Omega_factor": 2.0154817446
+  },
+  "r120": {
+   "f": 0.2460873896,
+   "h": 0.9995257333,
+   "sqrt_f": 0.4960719602,
+   "Omega_factor": 2.0158365728
+  },
+  "r240": {
+   "f": 0.2460116789,
+   "h": 0.9995852882,
+   "sqrt_f": 0.495995644,
+   "Omega_factor": 2.0161467386
+  },
+  "r480": {
+   "f": 0.2459455122,
+   "h": 0.9996373601,
+   "sqrt_f": 0.4959289387,
+   "Omega_factor": 2.016417922
+  },
+  "Omega_factor_relative_deltas": [
+   0.000176020321,
+   0.000153840886,
+   0.000134487696
+  ],
+  "fit_1_over_r": {
+   "f_inf_extrapolated": 0.2458874254,
+   "f1": 0.03170195,
+   "f2": -0.8721637780649135,
+   "Omega_factor_extrapolated": 2.0166560804,
+   "f_r480_minus_f_inf": 5.80868e-05,
+   "Omega_factor_rel_delta_at_r480": 0.0001180956
+  },
+  "converged_at_r480_within_1e-4": false,
+  "convergence_class": "slow_1_over_r_tail \u2014 the asymptote is reached via Richardson extrapolation, not directly at finite r",
+  "f_inf_for_solver": 0.24588742544999992,
+  "Omega_factor_for_solver": 2.0166560804
+ },
+ "p0_center_regularity": {
+  "n_probe_points": 25,
+  "r_probe_range": [
+   0.02,
+   0.05
+  ],
+  "f_values": [
+   0.24914285,
+   0.24908179,
+   0.24902585,
+   0.24897431,
+   0.24892662,
+   0.2488823,
+   0.24884095,
+   0.24880223,
+   0.24876587,
+   0.24873163,
+   0.24869929,
+   0.24866868,
+   0.24863964,
+   0.24861203,
+   0.24858574,
+   0.24856066,
+   0.24853668,
+   0.24851373,
+   0.24849174,
+   0.24847062,
+   0.24845033,
+   0.24843081,
+   0.248412,
+   0.24839386,
+   0.24837635
+  ],
+  "h_values": [
+   0.99888629,
+   0.9988294,
+   0.99878018,
+   0.99873733,
+   0.99869982,
+   0.99866683,
+   0.99863769,
+   0.99861186,
+   0.99858888,
+   0.99856838,
+   0.99855004,
+   0.9985336,
+   0.99851882,
+   0.99850552,
+   0.99849353,
+   0.99848271,
+   0.99847293,
+   0.99846409,
+   0.99845608,
+   0.99844884,
+   0.99844227,
+   0.99843633,
+   0.99843095,
+   0.99842608,
+   0.99842167
+  ],
+  "rhs_finite_everywhere": true,
+  "rhs_at_r002_f": -0.05111785,
+  "rhs_at_r002_h": -0.04899071,
+  "note": "the background EOM is regular at the probe radii; the center Taylor solution and the integrated branch agree at r=0.05 within integration tolerance (same IVP)",
+  "f0_extrapolated": 0.25013833,
+  "f0_plausible_regular": true
+ },
+ "p1_asymptotic_operator_node": {
+  "r": 60.0,
+  "K_det": 14529749084318.195,
+  "G_det": 532219606347227.4,
+  "M_det": 332540.4083769992
+ },
+ "p1_asymptotic_dispersion": {
+  "omega_test": 1.0,
+  "k_roots": [
+   {
+    "k2_real": 4.0627027785599426,
+    "k2_imag": 0.0,
+    "k_real": 2.0156147396166615,
+    "k_imag": 0.0,
+    "k_abs": 2.0156147396166615
+   },
+   {
+    "k2_real": 0.0013157676831424526,
+    "k2_imag": 0.0,
+    "k_real": 0.03627351214236709,
+    "k_imag": 0.0,
+    "k_abs": 0.03627351214236709
+   },
+   {
+    "k2_real": 4.063259091018179,
+    "k2_imag": 0.0,
+    "k_real": 2.0157527355849427,
+    "k_imag": 0.0,
+    "k_abs": 2.0157527355849427
+   }
+  ],
+  "n_finite_roots": 3
+ },
+ "p1_common_speed_check": {
+  "k_values": [
+   2.0156147396166615,
+   0.03627351214236709,
+   2.0157527355849427
+  ],
+  "relative_spread": 1.459922,
+  "all_three_equal": false
+ },
+ "preflight_results": {
+  "P0_center_basis": "PASS",
+  "P1_asymptotic_dispersion": "PASS",
+  "P2_outer_convergence": "PASS"
+ },
+ "bc_verdict": "CHANNEL_SPECIFIC_SPEEDS \u2014 each channel gets its own k_j(omega); the common-speed BC would be WRONG.",
+ "wall_seconds": 1.2
+}
