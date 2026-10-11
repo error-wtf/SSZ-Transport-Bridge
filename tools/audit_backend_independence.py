@@ -44,6 +44,14 @@ CLOSURE_IMPORT_PREFIXES = ("ssz_p5",)
 # Files allowed to carry declared independent physics:
 DECLARED_PHYSICS_FILES = {
     "src/transport_bridge/backends/ssz_closure_backend.py",
+    # B6/B2 independent certification machinery (commits 8aa4cff, 46253bc):
+    # independent re-implementations for cross-validation — they import no
+    # closure code (check A) and exist precisely so the bridge's physics is
+    # reproduced by unrelated numerics.  Declared here per ADR-001 ("an
+    # independent re-derivation is allowed and must be registered").
+    "src/transport_bridge/independent_jost_v1.py",
+    "src/transport_bridge/bvp_qnm_v2.py",
+    "src/transport_bridge/stable_evans_v3.py",
 }
 
 

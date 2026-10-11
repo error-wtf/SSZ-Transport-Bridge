@@ -28,7 +28,7 @@ from pathlib import Path
 
 import numpy as np
 
-BRIDGE = Path("/home/error/physics/clones/SSZ-Transport-Bridge")
+BRIDGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BRIDGE / "src"))
 
 from transport_bridge.independent_solve_3dof import (  # noqa: E402

@@ -286,14 +286,19 @@ class IndependentQNM3DOF:
         V1, V2 = V[:3, :], V[3:, :]
         return V2 @ np.linalg.inv(V1)
 
-    def D_riccati(self, omega: complex, **kw):
-        """Match matrix Z_in(r_match) - Z_out(r_match); its determinant
+    def D_riccati(self, omega: complex, r_eval: float | None = None, **kw):
+        """Match matrix Z_in(r_match) - Z_out(r_eval); its determinant
         vanishes exactly when a solution exists that is regular at the
         origin and outgoing at infinity. Basis rescalings cancel in Z,
         so this observable is scale-free by construction.
+
+        r_eval defaults to r_match (matching-radius convention of the
+        R_MATCH_SENSITIVITY gate). Z_in never takes r_eval: the kw
+        split below keeps the two signatures honest instead of letting
+        a shared **kw silently raise TypeError in one callee.
         """
         Zi = self.Z_in(omega, **kw)
-        Zo = self.Z_out(omega, **kw)
+        Zo = self.Z_out(omega, self.r_match if r_eval is None else r_eval, **kw)
         if not (isinstance(Zi, np.ndarray) and isinstance(Zo, np.ndarray)):
             return np.nan
         return Zi - Zo

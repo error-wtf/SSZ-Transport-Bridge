@@ -1,7 +1,7 @@
 {
  "audit": "SSZ_B6_STEP0_ANALYTIC_CONTROLS_V1",
  "status": "B6_STEP0_CERTIFIED",
- "generated_utc": "2026-10-10T23:27:15.551911+00:00",
+ "generated_utc": "2026-10-11T15:24:57.916935+00:00",
  "tier_labeling": {
   "level1_shared": "channel params + frozen reference files (hash-gated)",
   "level2_independent": "blind scan + DOP853 shooting + Newton (independent_jost_v1.py)",
@@ -13,7 +13,7 @@
    "V0": -2.5,
    "a": 1.0,
    "n_candidates": 10,
-   "candidates_frozen_sha256": "a768ccb85f2f734b5db176dd84e7d25fa225c35cfed1b8e60b7f129424bf96f6",
+   "candidates_frozen_sha256": "c415e7e3359f89916431436b123799a6840cf7a6f23e68743adacfe771518391",
    "g2_analytic_residual_max": 4.0983210015919556e-14,
    "g3_reference_reproduction": [
     {
@@ -42,7 +42,7 @@
    "V0": -4.0,
    "a": 0.8,
    "n_candidates": 8,
-   "candidates_frozen_sha256": "c29b8f26b07484de29d3059200d2ce2ded9d8ace80bb9d8d1b39153315b55dfb",
+   "candidates_frozen_sha256": "907b2a48f46323dadd04c759460eb763985699d37565399a1a0a6f179b0cdc7f",
    "g2_analytic_residual_max": 4.511063047890465e-14,
    "g3_reference_reproduction": [
     {
@@ -71,7 +71,7 @@
    "V0": -6.0,
    "a": 1.3,
    "n_candidates": 12,
-   "candidates_frozen_sha256": "aaac86d76806e38c6644757fb6c0409c2349270134761df9dd4adb0f755c44e5",
+   "candidates_frozen_sha256": "fbd33389e28920dae15bcdb23e0fc9bf145bea07c90ecc47fa53a3c18e813756",
    "g2_analytic_residual_max": 8.648883562053639e-14,
    "g3_reference_reproduction": [
     {
