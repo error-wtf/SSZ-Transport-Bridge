@@ -40,6 +40,7 @@ D(omega) = 0 in the complex plane.
 from __future__ import annotations
 
 import hashlib
+
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.interpolate import CubicSpline
@@ -89,9 +90,10 @@ class FrozenOperator:
         self._d_sp = {}
         for name in ("G", "S", "M", "K"):
             sp_r, sp_i = self._sp[name]
+            dr = sp_r.derivative()
+            di = sp_i.derivative()
             self._d_sp[name] = (
-                lambda x, _r=sp_r.derivative(), _i=sp_i.derivative():
-                    _r(x) + 1j * _i(x)
+                lambda x, _r=dr, _i=di: _r(x) + 1j * _i(x)
             )
         self._spG_d = self._d_sp["G"]
         self._spS_d = self._d_sp["S"]
@@ -155,7 +157,7 @@ class IndependentQNM3DOF:
         C2 = -G
         # linearize: [0 I; -C2^{-1} C0  -C2^{-1} C1] has eigvals k
         Z = np.zeros((3, 3), complex)
-        I = np.eye(3, dtype=complex)
+        I = np.eye(3, dtype=complex)  # noqa: E741
         top = np.block([[Z, I]])
         bot = np.block([[-np.linalg.solve(C2, C0), -np.linalg.solve(C2, C1)]])
         ks = np.linalg.eigvals(np.vstack([top, bot]))
@@ -241,7 +243,8 @@ class IndependentQNM3DOF:
         GiA = np.linalg.solve(G, A)
         GiB = np.linalg.solve(G, B - omega * omega * K)
         H = np.block([[-GiA, -GiB],
-                      [np.eye(3, dtype=complex), np.zeros((3, 3), complex)]])
+                      [np.eye(3, dtype=complex),
+                       np.zeros((3, 3), complex)]])
         ev, V = np.linalg.eig(H)
         order = np.argsort(ev.real)
         return ev[order], V[:, order]
@@ -278,7 +281,7 @@ class IndependentQNM3DOF:
         r_eval independence of the certified candidates is a gate
         (R_MATCH_SENSITIVITY), replacing the old flat-tail assumption.
         """
-        lam, V = self.outgoing_selection(omega, r_eval)
+        _lam, V = self.outgoing_selection(omega, r_eval)
         # outgoing graph subspace: Z_out = V2 V1^{-1} with V = [V1; V2]
         V1, V2 = V[:3, :], V[3:, :]
         return V2 @ np.linalg.inv(V1)

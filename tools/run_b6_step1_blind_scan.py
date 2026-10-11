@@ -35,10 +35,8 @@ TILE_BOUNDS = {
 
 
 def scan_row(args):
-    import multiprocessing as _mp
     tile, j, re_grid, wi = args
-    from transport_bridge.independent_qnm_3dof_v1 import (
-        FrozenOperator, IndependentQNM3DOF)
+    from transport_bridge.independent_qnm_3dof_v1 import FrozenOperator, IndependentQNM3DOF
 
     op = FrozenOperator(str(BRIDGE / "data/frozen_specs/V4_PHYSICAL_RESONANCE_EXPORT_V3_3DOF.npz"))
     slv = IndependentQNM3DOF(op)

@@ -45,6 +45,8 @@ Evans construction (both directions FORWARD-STABLE, no dichotomy):
 
 from __future__ import annotations
 
+import itertools
+
 import numpy as np
 from scipy.integrate import solve_ivp
 
@@ -70,7 +72,7 @@ class LocalPencil:
         Gp = (self.matrices(r + h)[0] - self.matrices(r - h)[0]) / (2 * h)
         w2 = omega * omega
         Z = np.zeros((3, 3), complex)
-        I = np.eye(3, dtype=complex)
+        I = np.eye(3, dtype=complex)  # noqa: E741
         M = np.block([[Z, I],
                       [np.linalg.solve(G, w2 * K - B), np.zeros((3, 3))]])
         ev, V = np.linalg.eig(M)
@@ -165,7 +167,7 @@ class StableEvansV3:
         rhs = self._rhs(omega)
         y = np.concatenate([Y0.ravel(order="F"), dY0.ravel(order="F")])
         edges = np.linspace(r0, r1, self.n_segments + 1)
-        for a, b in zip(edges[:-1], edges[1:]):
+        for a, b in itertools.pairwise(edges):
             if abs(b - a) < 1e-14:
                 continue
             sol = solve_ivp(rhs, (a, b), y, method="DOP853",

@@ -63,7 +63,7 @@ class LocalPencil:
         Gp = (self.matrices(r + h)[0] - self.matrices(r - h)[0]) / (2 * h)
         w2 = omega * omega
         Z = np.zeros((3, 3), complex)
-        I = np.eye(3, dtype=complex)
+        I = np.eye(3, dtype=complex)  # noqa: E741
         M = np.block([[Z, I],
                       [np.linalg.solve(G, w2 * K - B), np.zeros((3, 3))]])
         ev, V = np.linalg.eig(M)

@@ -88,7 +88,7 @@ class LaurentTail:
         """
         B0, K0 = self.C["B"][0], self.C["K"][0]
         Z = np.zeros((3, 3), complex)
-        I = np.eye(3, dtype=complex)
+        I = np.eye(3, dtype=complex)  # noqa: E741
         M = np.block([[Z, I],
                       [np.linalg.solve(self.G0, omega * omega * K0 - B0),
                        np.zeros((3, 3), complex)]])
@@ -173,10 +173,6 @@ class LaurentTail:
         # bordered solve: null(L0) = span(a0) (rank-2 pencil per branch)
         for n in range(1, n_max):
             rhs = np.zeros(3, complex)
-            for m in range(self.n_terms):
-                # a_{n-m} parts (d, c at level n-m), only for m >= 1
-                # (m = 0 terms hold the a_n unknown and a_{n-1} in d_n):
-                pass
             # explicit: gather for each p < n the coefficient of a_p in
             # the r^{2-n} equation, then invert analytically:
             # a_p appears via:
@@ -292,7 +288,7 @@ class LaurentTail:
                     S0 = S1 = S2 = 0j
                     for n in range(n_max):
                         t = (mu_j + (al - n) / r_eval)
-                        w_n = (mu_j - (al - n) / r_eval)  # unused
+                        (mu_j - (al - n) / r_eval)  # unused
                         base = a[n] * r_eval ** (-n)
                         S0 = S0 + base
                         S1 = S1 + t * base

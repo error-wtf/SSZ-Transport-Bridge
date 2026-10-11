@@ -24,8 +24,7 @@ import numpy as np
 BRIDGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BRIDGE / "src"))
 
-from transport_bridge.independent_qnm_3dof_v1 import (  # noqa: E402
-    FrozenOperator, IndependentQNM3DOF)
+from transport_bridge.independent_qnm_3dof_v1 import FrozenOperator, IndependentQNM3DOF  # noqa: E402
 
 OP_NPZ = BRIDGE / "data/frozen_specs/V4_PHYSICAL_RESONANCE_EXPORT_V3_3DOF.npz"
 

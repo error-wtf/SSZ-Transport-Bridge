@@ -12,7 +12,6 @@ machinery (DOP853, real/imag stacking) INDEPENDENTLY of the Step-0
 Numerov/shooting code, then check sigma_min of Z_in - Z_out has a
 sharp minimum at the frozen reference pole.
 """
-import sys
 from pathlib import Path
 
 import numpy as np
