@@ -1,4 +1,4 @@
-"""Sagnac backend — READ-ONLY adapter to the validated reference repo.
+"""Sagnac backend -- READ-ONLY adapter to the validated reference repo.
 
 This file contains NO Sagnac formulas.  It imports the validated
 reference implementation (Sagnac-Reference-Transport) and exposes it
@@ -8,6 +8,7 @@ source of truth.
 from __future__ import annotations
 
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,7 @@ from transport_bridge import (
     TransportArchitecture,
     TransportOperator,
 )
+from transport_bridge.phase_contract import PhaseContractSpec, PhaseDecomposition
 
 # The reference repo location may be provided via env; default is the
 # sibling checkout in the physics workspace.
@@ -100,5 +102,39 @@ def make_operator(law: SignalLaw, omega_detector: float = 2.0) -> TransportOpera
 
 
 def inverse_v(forward: dict[str, float], c: float = 1.0) -> float:
-    """v from (t_plus, t_minus) — the reference repo's inversion."""
+    """v from (t_plus, t_minus) -- the reference repo's inversion."""
     return velocity_from_times(forward["t_plus"], forward["t_minus"], c)
+
+
+# --- Phase & Observable Contract V1 adapter --------------------------------
+# The reference repo stays untouched: directed_times / delta_tau_detector
+# are IMPORTED from it; this adapter only declares how its times map into
+# the bridge's phase decomposition.
+#
+#   t_geom          = L/c          (v-independent reference time)
+#   phi_full(d,ω)   = ω · L/(c - d·v)      (full directed eikonal phase)
+#   phi_extra(d,ω) := phi_full - ω·t_geom  (defined residue; gamma share of the
+#                     detector time enters via delta_tau_detector elsewhere)
+#
+# Double counting is excluded structurally: consumers take phi_full OR
+# ω·t_geom + phi_extra (identity enforced by PhaseDecomposition).
+
+def phase_spec() -> PhaseContractSpec:
+    def decompose(law: Mapping, omega: float, direction: int) -> PhaseDecomposition:
+        if direction not in (+1, -1):
+            raise ValueError("direction must be +1 or -1")
+        params = law.parameters if isinstance(law, SignalLaw) else law
+        cfg = SagnacConfig(L=float(params["L"]), c=float(params["c"]),
+                           v=float(params["v"]))
+        d = float(directed_times(cfg)[0 if direction > 0 else 1])
+        return PhaseDecomposition(
+            omega=float(omega), t_geom=cfg.T0, phi_full=float(omega) * d,
+            direction=direction, time_unit="dimensionless")
+
+    return PhaseContractSpec(
+        backend_name="sagnac_ring",
+        time_unit="dimensionless",
+        decompose=decompose,
+        required_parameters=("L", "c", "v"),
+        direction_parameter="v",
+    )

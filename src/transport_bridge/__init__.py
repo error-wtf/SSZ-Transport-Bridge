@@ -17,11 +17,22 @@ from .contracts import (
     check_inverse_round_trip,
     check_parity,
 )
+from .phase_contract import (
+    TIME_UNITS,
+    PhaseContractSpec,
+    PhaseDecomposition,
+    check_phase_decomposition,
+    check_two_channel_readout,
+    dimension_check,
+)
 from .rules import ObservableRule
 
 __all__ = [
+    "TIME_UNITS",
     "ObservableRule",
     "ObservableSet",
+    "PhaseContractSpec",
+    "PhaseDecomposition",
     "PropagatedState",
     "SignalLaw",
     "TransportArchitecture",
@@ -30,4 +41,7 @@ __all__ = [
     "check_forward",
     "check_inverse_round_trip",
     "check_parity",
+    "check_phase_decomposition",
+    "check_two_channel_readout",
+    "dimension_check",
 ]

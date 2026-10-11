@@ -1,0 +1,205 @@
+{
+  "artifact": "SSZ_PHASE_OBSERVABLE_CONTRACT_V1",
+  "created_utc": "2026-10-11T18:38:49.050434+00:00",
+  "repo": "SSZ-Transport-Bridge",
+  "git_head": "5ab1a6993c72c5c67baed153c74a75ef9058e974",
+  "phase_identity": "phi_full(omega) = omega*t_geom + phi_extra (phi_extra DEFINED as residue; double counting structurally excluded)",
+  "units_convention": "omega in rad/time_unit; time_unit in ['s', 'geometric_m', 'dimensionless']; phi dimensionless",
+  "backends": {
+    "sagnac_ring": "reference (import-only, repo untouched)",
+    "ssz_independent_judge": "geometry owner SSZ_FULL_CLOSURE via hash-bound frozen member"
+  },
+  "gates": {
+    "sagnac_phase_contract": {
+      "time_unit": "dimensionless",
+      "direction_parameter": "v",
+      "reference_repo_untouched": true,
+      "reference_repo": "Sagnac-Reference-Transport (import-only adapter)",
+      "identity_gates": [
+        {
+          "omega": 0.0,
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "dimensionless",
+          "backend": "sagnac_ring"
+        },
+        {
+          "omega": 1.0,
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "dimensionless",
+          "backend": "sagnac_ring"
+        },
+        {
+          "omega": 7.5,
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "dimensionless",
+          "backend": "sagnac_ring"
+        },
+        {
+          "omega": 100.0,
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "dimensionless",
+          "backend": "sagnac_ring"
+        }
+      ],
+      "direction_semantics": [
+        {
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "dimensionless",
+          "backend": "sagnac_ring"
+        }
+      ],
+      "reference_limit_v_zero": {
+        "v_zero_phi_full": 9.0,
+        "v_zero_phi_extra": 0.0,
+        "pass": true
+      },
+      "residue_analytic_crosscheck": {
+        "phi_extra_measured": 1.0,
+        "phi_extra_closed_form_v_over_1minusv": 1.0,
+        "abs_error": 0.0,
+        "pass": true
+      },
+      "dimension_check": {
+        "checks": {
+          "phi_full_finite_dimensionless": true,
+          "phi_extra_finite": true,
+          "omega_t_geom_finite": true,
+          "time_unit_registered": true,
+          "omega_nonneg": true
+        },
+        "pass": true,
+        "omega_unit": "rad/time_unit"
+      }
+    },
+    "ssz_closure_phase_contract": {
+      "time_unit": "geometric_m",
+      "geometry_owner": "SSZ_FULL_CLOSURE (frozen, hash-bound member)",
+      "identity_gates": [
+        {
+          "omega": 0.0,
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "geometric_m",
+          "backend": "ssz_independent_judge"
+        },
+        {
+          "omega": 1.0,
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "geometric_m",
+          "backend": "ssz_independent_judge"
+        },
+        {
+          "omega": 12.0,
+          "identity_ok": true,
+          "identity_residual": 0.0,
+          "t_geom_direction_invariant": true,
+          "directed_phase_nonnegative": true,
+          "difference_phase_odd": true,
+          "pass": true,
+          "time_unit": "geometric_m",
+          "backend": "ssz_independent_judge"
+        }
+      ],
+      "shapiro_share_positive": {
+        "phi_full": 0.7543850229813709,
+        "t_geom": 0.10000000000000009,
+        "phi_extra_positive": true,
+        "phi_extra": 0.4543850229813706
+      },
+      "quadrature_convergence": {
+        "grids": [
+          2000,
+          4000,
+          8000,
+          16000
+        ],
+        "coordinate_time_values": [
+          0.2514616743302901,
+          0.2514616743278909,
+          0.25146167432729144,
+          0.2514616743271416
+        ],
+        "successive_diffs": [
+          2.3991919562149633e-12,
+          5.994649221463533e-13,
+          1.4982459717316488e-13
+        ],
+        "monotone_and_converging": true
+      },
+      "radial_b0_direction_invariance": true,
+      "forbidden_b_fails_closed": true,
+      "provenance": {
+        "closure_git_head": "9cedf0b710987f352dfdbca39cd290a59a252ca2",
+        "member_sha256": "8bd460ef022a9cdbcc3644abd8aecbfbb910f8e364ac1410378d2641291559cf",
+        "verdict": "TRUE_FULL_CLOSURE_PASS",
+        "binding_ok": true
+      },
+      "dimension_check": {
+        "checks": {
+          "phi_full_finite_dimensionless": true,
+          "phi_extra_finite": true,
+          "omega_t_geom_finite": true,
+          "time_unit_registered": true,
+          "omega_nonneg": true
+        },
+        "pass": true,
+        "omega_unit": "rad/time_unit"
+      }
+    },
+    "two_channel_readout": {
+      "claim": "common phase leaves auto-PSD invariant; relative phase appears ONLY in the cross-spectrum (on top of the data term A B*, removed by calibration division)",
+      "sagnac_relative_phase_case": {
+        "auto_psd_invariant": true,
+        "cross_spectrum_carries_relative_phase": true,
+        "max_rel_phase_err": 4.577566798522237e-16,
+        "pass": true
+      },
+      "zero_relative_phase_case": {
+        "auto_psd_invariant": true,
+        "cross_spectrum_carries_relative_phase": true,
+        "max_rel_phase_err": 2.2369442708242125e-16,
+        "pass": true
+      }
+    },
+    "scope_guards": {
+      "frozen_F7_gate_untouched": true,
+      "frozen_B6_gate_untouched": true,
+      "astrophysical_detection_claims": "NONE"
+    }
+  },
+  "verdict": "PASS"
+}

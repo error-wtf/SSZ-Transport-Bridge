@@ -1,12 +1,12 @@
-"""SSZ closure backend — INDEPENDENT RE-SOLVER (ADR-001, Variante B).
+"""SSZ closure backend -- INDEPENDENT RE-SOLVER (ADR-001, Variante B).
 
 DECISION (2026-10-06, ADR-001): this backend is an independent JUDGE that
 RE-DERIVES the SSZ transport equations from frozen metric data and solves
 them numerically with its own integrators.  It does NOT import physics
-functions from SSZ_FULL_CLOSURE — only frozen member data (MODEL_LOCK ->
+functions from SSZ_FULL_CLOSURE -- only frozen member data (MODEL_LOCK ->
 member CSV) via hash-bound provenance.
 
-Semantics: `independent reimplementation from frozen metric data` — NOT
+Semantics: `independent reimplementation from frozen metric data` -- NOT
 `zero shared physics formulas`.  The earlier adapter wording was wrong for
 this backend and has been retired (docs/REAL_SSZ_BRIDGE_SPEC.md ADR-001).
 
@@ -22,6 +22,7 @@ Symmetry: static spherical geometry.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,7 @@ from transport_bridge import (
     TransportArchitecture,
     TransportOperator,
 )
+from transport_bridge.phase_contract import PhaseContractSpec, PhaseDecomposition
 from transport_bridge.provenance import load_closure_provenance
 
 # --- Declared independent physics (audited registry) ---------------------
@@ -137,7 +139,7 @@ def closure_repo_path() -> Path:
     """Fail-closed resolution of the closure checkout.
 
     Priority: SSZ_FULL_CLOSURE_PATH env var -> default local layout.  Raises
-    with an actionable message when the checkout is unavailable — the judge
+    with an actionable message when the checkout is unavailable -- the judge
     never guesses.
     """
     import os
@@ -146,7 +148,7 @@ def closure_repo_path() -> Path:
     path = Path(p)
     if not (path / "MODEL_LOCK.json").exists():
         raise RuntimeError(
-            f"SSZ_FULL_CLOSURE checkout not usable at {path} — set "
+            f"SSZ_FULL_CLOSURE checkout not usable at {path} -- set "
             "SSZ_FULL_CLOSURE_PATH to a checkout containing MODEL_LOCK.json")
     return path
 
@@ -183,3 +185,56 @@ def provenance() -> dict[str, Any]:
         "closure_member_sha256": p["member_sha256"],
         "closure_src": str(repo_path),
     }
+
+
+# --- Phase & Observable Contract V1 adapter --------------------------------
+# Geometry owner: SSZ_FULL_CLOSURE (frozen member, hash-bound).  For a null
+# ray at impact parameter b the eikonal phase per unit E is the Shapiro-type
+# quadrature
+#
+#     phi_full(b) = ∫ dr / sqrt(f h) / sqrt(1 - b² h / r²)
+#
+# (effective radial speed sqrt(f·(1 - b² h/r²)) from ds²=0; the flat-space
+# reference at the same endpoints is t_geom = |r_b - r_a| in units c=1).
+# phi_extra := phi_full·ω - ω·t_geom is the DEFINED residue -- the Shapiro /
+# curvature share -- so consumers can never double count: they take
+# phi_full OR ω·t_geom + phi_extra (identity enforced by the contract).
+
+def _phase_decompose(f_spl, h_spl, params: Mapping, omega: float,
+                     direction: int) -> PhaseDecomposition:
+    r_a = float(params.get("r_a", 1.5))
+    r_b = float(params.get("r_b", 1.6))
+    b = float(params.get("b", 2.5))
+    r_lo, r_hi = (r_a, r_b) if r_b > r_a else (r_b, r_a)
+    grid = np.linspace(r_lo, r_hi, 20000)
+    f_g, h_g = f_spl(grid), h_spl(grid)
+    radial = 1.0 - (b**2) * h_g / grid**2
+    if float(np.min(radial)) < 0.0:
+        raise ValueError(f"forbidden impact parameter b={b} on [{r_lo},{r_hi}]")
+    integrand = 1.0 / np.sqrt(f_g * h_g * radial)
+    t_eff = float(np.trapezoid(integrand, grid))     # directed coordinate time
+    t_geom = abs(r_b - r_a)                          # flat reference, c = 1
+    phi_full = omega * t_eff
+    return PhaseDecomposition(omega=float(omega), t_geom=t_geom,
+                              phi_full=phi_full, direction=direction,
+                              time_unit="geometric_m")
+
+
+def phase_spec() -> PhaseContractSpec:
+    repo_path = closure_repo_path()
+    lock = json.loads((repo_path / "MODEL_LOCK.json").read_text())
+    from .utils import load_metric_splines
+    f_spl, h_spl = load_metric_splines(repo_path / lock["action_member_stream"])
+
+    def decompose(law: Mapping, omega: float, direction: int) -> PhaseDecomposition:
+        if direction not in (+1, -1):
+            raise ValueError("direction must be +1 or -1")
+        params = law.parameters if isinstance(law, SignalLaw) else law
+        return _phase_decompose(f_spl, h_spl, params, omega, direction)
+
+    return PhaseContractSpec(
+        backend_name="ssz_independent_judge",
+        time_unit="geometric_m",
+        decompose=decompose,
+        required_parameters=("r_a", "r_b", "b"),
+    )

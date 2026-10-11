@@ -175,6 +175,62 @@ Full command sequence with expected outputs: `REPRODUCE.md`. Machine-written pip
 
 Full lists incl. all deliverable files: `docs/FULL_PIPELINE_REPORT_2026-10-11.md` section 6.
 
+## 9a. Phase & Observable Contract V1 (integration order, 2026-10-11)
+
+Step 1 of the five-repo integration: a shared phase/observable vocabulary,
+implemented WITHOUT touching the independent reference or the frozen gates.
+
+**Decomposition (double counting structurally excluded):**
+
+```
+phi_full(omega) = omega * t_geom + phi_extra      (phi_extra DEFINED as residue)
+```
+
+A consumer takes `phi_full` OR `omega*t_geom + phi_extra` -- never both.
+The identity gate `check_phase_decomposition` re-verifies the identity per
+backend and per direction.
+
+- **Sagnac (`sagnac_ring`)**: independent reference repo is IMPORTED only
+  (repo untouched). `t_geom = L/c` (v-independent); `phi_full = omega*L/(c -/+ v)`;
+  the residue equals the exact series share `omega*L/c * beta/(1-beta)`.
+- **SSZ (`ssz_independent_judge`)**: geometry owner is SSZ_FULL_CLOSURE
+  (frozen, hash-bound member). `phi_full = omega * INT dr / sqrt(f h (1 - b^2 h/r^2))`;
+  `t_geom = |r_b - r_a|` (flat, c=1); the residue is the Shapiro/curvature
+  share (measured positive in the weak-field window).
+- **Direction semantics**: `t_geom` is direction-invariant, directed phase
+  is non-negative per direction, and the DIFFERENCE phase is odd under the
+  law's `direction_parameter` flip (`v -> -v`). No signed-phase relabeling.
+- **Units**: `omega` in rad/time_unit; registered time units
+  `s | geometric_m | dimensionless`; phi dimensionless; fail-closed on
+  unknown units, negative omega, forbidden impact parameter.
+
+**Two-channel measurement honesty (no detection claims):** a COMMON phase
+`A(omega) -> e^{i phi} A(omega)` leaves every auto-PSD invariant
+(`|e^{i phi} A|^2 = |A|^2`, gate: allclose). Relative phase appears ONLY in
+the cross-spectrum `S_ab = e^{i(phi_a - phi_b)} A B*` ON TOP of the data
+term `A B*`; the gate divides out the data term (calibration operation) and
+recovers `e^{i(phi_a - phi_b)}` exactly. The Sagnac relative phase equals
+`omega * Delta_tau` with the closed form `Delta_tau = 2 L v / (c^2 - v^2)`.
+
+**Scope guards:** frozen F7 and B6 gates untouched; no astrophysical
+detection claims; the SSZ residue being a "curvature share" is a statement
+about the frozen metric member, not about astronomy.
+
+Evidence:
+
+- Code: `src/transport_bridge/phase_contract.py` (+ adapters
+  `phase_spec()` in both backends), exports in `__init__`.
+- Independent tests: `tests/test_phase_contract_v1.py` (20 tests:
+  identity, direction semantics, flat/weak-field limits, analytic residue
+  crosscheck, quadrature convergence, provenance binding, fail-closed
+  unit/parameter handling, two-channel honesty incl. the pure-gauge case).
+- Strict-JSON artifact (all gates run for real; verdict FAIL on any
+  single gate failure):
+  `artifacts/SSZ_PHASE_OBSERVABLE_CONTRACT_V1.json`,
+  sha256 `2b4fdcb01609bca5d246b48a8d68513d602329783c6b45e49d9abb1f020f009b`
+  (measured 2026-10-11, builder `tools/build_phase_contract_artifact_v1.py`).
+- Suite at commit time: 74 passed (incl. 20 new), ruff clean.
+
 ## 10. License / attribution
 
 See `pyproject.toml`; the closure-research reference commit is recorded in the artifacts' provenance fields. No third-party data beyond the frozen operator export.
