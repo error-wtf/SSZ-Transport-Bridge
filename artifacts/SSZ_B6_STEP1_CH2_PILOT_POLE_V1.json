@@ -50,5 +50,14 @@
     "source_commit": "06adce5194a88903e912e4ee0cb6235ff057b1a0",
     "branch": "production (a1,eps)=(-0.5,-0.3), L=6"
   },
-  "method_summary": "Two-sided Wronskian: interior regular Frobenius power seed (r^s, s=1.00168) outward-integrated; exterior INCOMING acoustic branch (mu=-2.01602 w, alpha=-1.07274) inward-integrated from r_seed=59.5; both forward-stable. D(w) = (psi_in' psi_ex - psi_ex' psi_in)/scale."
+  "method_summary": "Two-sided Wronskian: interior regular Frobenius power seed (r^s, s=1.00168) outward-integrated; exterior INCOMING acoustic branch (mu=-2.01602 w, alpha=-1.07274) inward-integrated from r_seed=59.5; both forward-stable. D(w) = (psi_in' psi_ex - psi_ex' psi_in)/scale.",
+  "superseded_by": "SSZ_B6_PILOT_SUPERSESSION_V1",
+  "superseded_date": "2026-10-12T13:40:49.538803+00:00",
+  "superseded_reason": [
+    "mpmath control solver (30/50/80 dps, holomorphic raw det,",
+    "ODE propagation included) shows NO pole at the certified",
+    "point: smooth pass-through 3e-9, no delta scaling, no local",
+    "dip in 5x5 region grid. Earlier certification was a",
+    "double-precision resolution artifact."
+  ]
 }

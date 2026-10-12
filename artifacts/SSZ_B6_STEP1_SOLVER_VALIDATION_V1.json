@@ -1,0 +1,59 @@
+{
+  "audit": "SSZ_B6_STEP1_SOLVER_VALIDATION_V1",
+  "date": "2026-10-12T13:52:20.720416+00:00",
+  "construction": "RK4-propagated interior + analytic exterior, raw holomorphic det (b6_mpmath_evans_v2 chain)",
+  "invariants": {
+    "product_svals_over_absdet_err": "2.207e-24",
+    "reference_root_closed_form_residual": "1.044e-16"
+  },
+  "cases": {
+    "simple_zero_N1": {
+      "abs_E_center": "7.6399412e-13",
+      "sigma_min_center": "5.5877353e-14",
+      "measured_floor": "0.0054659083",
+      "dip_orders": 9.855,
+      "G1_relative_dip_ge2OD": true,
+      "scaling_slope": 1.0,
+      "scaling_R2": 1.0,
+      "G2_scaling_slope_matches_order": true,
+      "G3_below_measured_floor": true,
+      "negctrl_abs_E": "1.7708542",
+      "G4_negctrl_above_floor": true,
+      "dps_stability_rel_change": "3.546e-38",
+      "G5_dps_stable": true,
+      "gate_pass": true
+    },
+    "double_zero_exceptional": {
+      "abs_E_center": "3.8482747e-13",
+      "sigma_min_center": "1.1809492e-13",
+      "measured_floor": "2.7126569e-6",
+      "dip_orders": 6.848,
+      "G1_relative_dip_ge2OD": true,
+      "scaling_slope": 2.02,
+      "scaling_R2": 0.999937,
+      "G2_scaling_slope_matches_order": true,
+      "G3_below_measured_floor": true,
+      "negctrl_abs_E": "0.26583358",
+      "G4_negctrl_above_floor": true,
+      "dps_stability_rel_change": "6.937e-39",
+      "G5_dps_stable": true,
+      "gate_pass": true,
+      "double_point_w": "(0.0 - 0.53206652463983426809j)",
+      "double_point_a": "1.8794642280435113058",
+      "residual_F": "5.346e-51",
+      "residual_dF_dw": "4.915e-52"
+    },
+    "negative_control_must_fail": {
+      "dip_orders": -0.0,
+      "scaling_slope": 0.0002,
+      "gate_pass": false
+    },
+    "retro_old_pilot": {
+      "dip_orders": -0.109,
+      "G1_relative_dip_ge2OD": false,
+      "verdict": "REJECTED (correct: pilot is not a zero)"
+    }
+  },
+  "verdict": "VALIDATION_PASSED",
+  "rule": "Recalibrated gates (G1-G5) PROVEN on analytic known zeros incl. a double zero; negative control rejected; supersedet pilot rejected.  Solver search may resume per SSZ_B6_GATE_RECALIBRATION_V1 step 4."
+}

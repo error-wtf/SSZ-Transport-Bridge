@@ -1,0 +1,27 @@
+{
+  "artifact": "SSZ_B6_GATE_RECALIBRATION_V1",
+  "date": "2026-10-12T13:40:49.538803+00:00",
+  "supersedes_gate": "run_b6_coupled_evans_scan.py FLOOR_TARGET=1e-12 absolute + relative negative control",
+  "why_failed": [
+    "Absolute 1e-12 threshold passed by pure noise when |E| floor ~1e-16..1e-21 (vacuous)",
+    "Negative control compared to 100*max(d_ref,1e-18) instead of the MEASURED noise floor",
+    "No scaling requirement -> 'small |E|' was treated as evidence of a pole"
+  ],
+  "new_gates": {
+    "G1_relative_dip": "min over rosette |E(w0+delta)| >= 100x |E(w0)| (>= 2 orders), delta = 1e-6..1e-3, both +Re and +Im directions",
+    "G2_scaling": "|E(w0+delta)| ~ C*|delta| with fitted slope 0.8..1.25 (simple zero) and linear regression R^2 >= 0.99 over >= 3 delta decades; higher order zeros need declared order m and slope ~ m",
+    "G3_absolute_floor": "|E(w0)| < 1e-2 * floor_measured(w0), floor_measured = median |E| over rosette at largest delta (never an assumed constant)",
+    "G4_negative_control_absolute": "|E(negctrl)| >= 100x floor_measured(w0) \u2014 against the measured floor, not relative to the candidate",
+    "G5_dps_stability": "verdict identical at dps 30 and 50 (control solver), scaling exponent stable within 0.1",
+    "G6_conditioning": "cond(M_match) at w0 reported; sigma_min isolated (gap >= 1e4 to next sigma), no multi-singular-value collapse",
+    "G7_holomorphy": "E evaluated as raw det of analytic M_match (no QR normalization inside the function); incoming-mode selection verified continuous on the rosette"
+  },
+  "release_rule": "ALL of G1-G7 must pass before any candidate may be called GATED_POLE_CANDIDATE; on failure classify REJECTED_<gate>",
+  "certified_reference": "tools/b6_mpmath_evans_v2.py (raw-det holomorphic Evans, mpmath) \u2014 the double-precision QR solver is demoted to coarse-scan only, never certification",
+  "measured_levels_2026_10_12": {
+    "candidate_region_Re005": "1e-5..1e-6 (rosette, dps 30/50/80 identical)",
+    "negative_control": "6.5e-6 center, rosette 2.3e-6..8.8e-6 \u2014 same level as candidate region -> old gates vacuous",
+    "pilot_region": "sigma_min_reg 7.2e-9 center, monotone decay to 1.5e-11 at region corner, NO dip -> old pilot floor was resolution artifact",
+    "floor_target_old": "1e-12 absolute (RETIRE)"
+  }
+}

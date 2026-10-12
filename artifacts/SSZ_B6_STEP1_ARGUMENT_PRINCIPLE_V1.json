@@ -1,0 +1,79 @@
+{
+ "artifact": "SSZ_B6_STEP1_ARGUMENT_PRINCIPLE_V1",
+ "created_utc": "2026-10-12T06:26:56Z",
+ "method": "argument principle on W(w)=det([Q_int|Q_ext]), 6x6",
+ "npz_sha256": "ad2bee7d3994097479933c1eea787f3aa381648d098ffd36aab32a4c436db2ef",
+ "d_eval_seconds": 12.69,
+ "contour_per_side": 32,
+ "results": {
+  "centers": {
+   "candidate": {
+    "w": [
+     0.051875,
+     0.0285
+    ],
+    "contours": {
+     "h=0.004": {
+      "N": -0.0,
+      "n_evals": 128,
+      "W_abs_min": 6.240355479950555e-19,
+      "W_abs_max": 2.0619261392907713e-15
+     },
+     "h=0.008": {
+      "N": 3.0,
+      "n_evals": 128,
+      "W_abs_min": 3.323998542620582e-19,
+      "W_abs_max": 1.3922701817633157e-15
+     },
+     "h=0.015": {
+      "N": 1.0,
+      "n_evals": 128,
+      "W_abs_min": 8.080193246556237e-20,
+      "W_abs_max": 2.050192805855439e-15
+     }
+    }
+   },
+   "pilot_anchor": {
+    "w": [
+     0.22642588643752676,
+     0.08455094304111954
+    ],
+    "contours": {
+     "h=0.008": {
+      "N": 0.0,
+      "n_evals": 128,
+      "W_abs_min": 2.085339314142745e-10,
+      "W_abs_max": 3.545710569269283e-07
+     }
+    }
+   },
+   "offset_control": {
+    "w": [
+     0.06,
+     0.045
+    ],
+    "contours": {
+     "h=0.008": {
+      "N": -3.0,
+      "n_evals": 128,
+      "W_abs_min": 1.0851512108329237e-18,
+      "W_abs_max": 3.1287222214226224e-15
+     }
+    }
+   }
+  }
+ },
+ "verdict": {
+  "candidate_N_values": [
+   -0.0,
+   3.0,
+   1.0
+  ],
+  "pilot_N": 0.0,
+  "control_N": -3.0,
+  "candidate_is_zero": false,
+  "pilot_reproduced": false,
+  "control_clean": false,
+  "overall": "NOT_CONFIRMED"
+ }
+}

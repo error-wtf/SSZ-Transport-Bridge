@@ -228,3 +228,26 @@ Phasen-Tracking als Nullstellen-Freiheits-Zertifikat.
 
 **Artefakte**: `SSZ_B6_STEP1_MPMATH_EVANS_{PILOT,CANDIDATE,NEGATIVE}_DPS{30,50,80}_R1.json`
 + `SSZ_B6_STEP1_MPMATH_CONTROLSOLVER_VERDICT_V1.json` (Gesamturteil).
+
+---
+
+## Addendum 5 (12.10.26, ~15:00) — Carmen-Priorisierung umgesetzt: Supersession + Gate-Rekalibrierung + Solver-Validierung
+
+**1. Pilot-Zertifikat formell SUPERSEDET** (`SSZ_B6_STEP1_CH2_PILOT_POLE_V1.json` in-place markiert + `SSZ_B6_PILOT_SUPERSESSION_V1`-Block im gleichen File):
+- Status CANDIDATE_POLE_CERTIFIED_NUMERICAL → supersedet durch mpmath-Kontrollsolver (`7215aec`).
+- Pilot 0.22643+0.08455i ist KEINE gültige Referenz/Validierungs-Anker mehr für B6. Die Reproduktion im Coupled-Scan zählt nur noch als Machinery-Cross-Check.
+- Scope: nur der Pole-Claim und die Gates; FK/Sagnac/Transport/lokale Spektralresultate ausdrücklich NICHT berührt.
+
+**2. Gates rekalkibriert** (`SSZ_B6_GATE_RECALIBRATION_V1` + Code-Änderung in `tools/run_b6_coupled_evans_scan.py`):
+- Alt (vakuum, alle 5 Kandidaten vom 12.10. Rauschen): absolut |D|<1e-12 + relative Negativkontrolle `100×max(d_ref,1e-18)`.
+- Neu: gemessener lokaler Floor (Rosette, 4 Offsets, zweitkleinster), Dip ≥ 2 OD, sichtbare Skalierung 50×/Dekade, absolute Negativkontrolle gegen den GEMESSENEN Floor, `gate_version=RECALIBRATED_V1`. Finale Bestätigung NUR via mpmath-Kontrollsolver (Rosette + dps-Leiter).
+
+**3. Solver gegen analytisch bekannte Nullstellen validiert** (`tools/b6_solver_validation_analytic_v1.py` → `SSZ_B6_STEP1_SOLVER_VALIDATION_V1.json`): **VALIDATION_PASSED** (exit 0)
+- Halblinien-Kasten (V0=-2.5, a=1), gleiche Konstruktionskette wie Kontrollsolver (RK4-Propagation, Matching an r=a, rohe holomorphe det, svals via eig(M^H M)).
+- Einfache Nullstelle (N1-Referenzwurzel, 100-stellig): Dip 9.9 OD, Slope 1.000, R²=1.0 → PASS.
+- Doppelpol-Exceptional-Point: analytisch reduziert auf w=-i/a mit q·tan(q·a) = -1/a (a0=1.8559…, w0=-0.538798…i; Residuen F, dF/dw ~ 1e-51): Dip 6.8 OD, Slope 2.02, R²=0.99994 → PASS mit deklarierter Ordnung 2.
+- Negativkontrolle: REJECTED (dip −0.0 OD). Retro-Test: alter Pilot durch neue Gates → REJECTED (dip −0.11 OD).
+- Konstruktions-Invarianten: ∏svals=|det| Fehler 2.2e-24; Referenzwurzel im.closed-form-Residuum 1.0e-16.
+- Fix-Historie im Lauf: (a) Regressions-Bug (Zentrum mit δ=0 im Fit) — Zentrum aus G2-Fit entfernt; (b) erste Doppelnull-Algebra falsch (residual_dF_dw=4.8 entlarvt) → korrekte Reduktion w=-i/a.
+
+**4. Nächster Schritt (offen)**: Physik-SSZ-Suche mit rekalibrierten Gates + holomorpher Evans-Funktion; optional ArgPrinciple v3 auf roher det mit Phasen-Tracking (QR-Version war der Bug, nicht das Prinzip).
