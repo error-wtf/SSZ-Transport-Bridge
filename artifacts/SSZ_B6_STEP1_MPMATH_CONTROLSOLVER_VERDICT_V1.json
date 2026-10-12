@@ -1,0 +1,93 @@
+{
+  "what": "B6 mpmath precision-controlled Evans control solver: three-case test (pilot / Re~0.05 candidate / negative control) + region grids",
+  "date": "2026-10-12",
+  "solver": "tools/b6_mpmath_evans_v2.py",
+  "construction": "raw det of M_match=[Qi_Y|Qi_dY|Qe_Y|Qe_dY] (6x6), analytic bases, Frobenius interior seed, exterior incoming = 3 smallest Re(mu) at r_seed with shifted inverse-iteration refinement, RK4 propagation in mpmath, no QR inside the function (holomorphic by construction); column-normalized sigma_min (smin_reg) as scale-invariant zero indicator",
+  "verification": [
+    "product(svals) == |det M| to 15+ digits (mp.eig of M^H M)",
+    "RK4 step-doubling: sigma_min drift ~15% per refine x2 (dps 50/80)",
+    "r_match 28..35: sigma_min varies 3.2e-9..5.0e-8 (no cancellation at fixed r)",
+    "incoming-mu selection continuous across pilot region (rotating branches tracked, no swap)",
+    "Frobenius-dominance bound: log_scale_int valid (<~e20 headroom) for t<=~0.3 along diagonal"
+  ],
+  "case_pilot": {
+    "center": "0.22642588643752676+0.08455094304111954i",
+    "sigma_min_raw": "8.6e-9",
+    "sigma_min_reg": "7.2e-9",
+    "double_D_reference": "3.0e-9",
+    "verdict": "NO zero: no |E(omega_0+delta)| ~ |delta| scaling; 5x5 region grid (Re 0.15-0.35, Im 0.03-0.23) shows monotone decay toward (0.35,0.23), minimum 1.5e-11 at corner, no local dip at the pilot",
+    "grid_smin_reg": {
+      "Im=0.03": [
+        1.087e-07,
+        5.601e-09,
+        7.757e-10,
+        2.516e-10,
+        2.252e-11
+      ],
+      "Im=0.08": [
+        2.459e-07,
+        3.931e-08,
+        2.476e-09,
+        2.839e-10,
+        1.866e-11
+      ],
+      "Im=0.13": [
+        2.633e-07,
+        3.705e-08,
+        7.037e-09,
+        4.234e-10,
+        2.244e-11
+      ],
+      "Im=0.18": [
+        9.904e-07,
+        2.251e-08,
+        2.583e-09,
+        1.682e-10,
+        1.93e-11
+      ],
+      "Im=0.23": [
+        8.653e-07,
+        2.691e-08,
+        1.222e-09,
+        1.121e-10,
+        1.504e-11
+      ],
+      "cols": "Re = 0.15, 0.20, 0.25, 0.30, 0.35"
+    }
+  },
+  "case_candidate_Re005": {
+    "center": "0.051875+0.0285i (candidate 1 of 5)",
+    "rosette_sigma_min": [
+      "1.43e-5 (delta=0)",
+      "5.0e-6 (0.03)",
+      "4.3e-5 (0.01)",
+      "1.9e-5 (0.003)",
+      "1.5e-5 (0.001)"
+    ],
+    "verdict": "NOT a zero: no dip, non-monotone noise-level behavior; indistinguishable from negative control; dps-independent 30/50/80"
+  },
+  "case_negative": {
+    "center": "0.06+0.045i",
+    "rosette_sigma_min": [
+      "6.5e-6",
+      "2.3e-6",
+      "8.8e-6",
+      "6.3e-6",
+      "6.3e-6"
+    ],
+    "verdict": "clean: same level as candidate region (1e-5..1e-6), no dip -> control does what it must"
+  },
+  "caveat_large_t": "beyond t~0.3 along the diagonal the interior Frobenius seed collapses to a rank-1-dominated basis (log_scale_int 7 -> 186; sigma_3 also falls, two zero svals at t=1.0) \u2014 the continuing decay there is a construction artifact, NOT evidence of zeros",
+  "conclusion": "Under the precision-controlled, holomorphic-by-construction Evans test NONE of the three regions shows an isolated zero: the certified pilot at 0.22643+0.08455i is not a zero of E (it sits on a smooth downhill), and the five Re~0.05 gate candidates are noise. The earlier machine-precision 'confirmation' of the pilot was a resolution illusion: high precision moves THROUGH 3e-9 smoothly instead of stopping at a pole.",
+  "open": "where (if anywhere) E actually vanishes inside the validity region remains open; Gate recalibration and possibly a zero-free certificate (argument principle on the raw holomorphic det with phase tracking) are the next steps",
+  "logs": [
+    "/root/.hermes/cache/scratch/b6_mpmath_pilot_dps30.log",
+    "/root/.hermes/cache/scratch/b6_mpmath_pilot_grid.log",
+    "/root/.hermes/cache/scratch/b6_mpmath_pilot_valley2.log",
+    "/root/.hermes/cache/scratch/b6_mpmath_candidate_dps30.log",
+    "/root/.hermes/cache/scratch/b6_mpmath_negative_dps30.log",
+    "/root/.hermes/cache/scratch/b6_mpmath_reg_scan.log",
+    "/root/.hermes/cache/scratch/b6_mpmath_spec.log",
+    "/root/.hermes/cache/scratch/b6_mpmath_region_grid.log"
+  ]
+}
